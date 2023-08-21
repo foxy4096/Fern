@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,6 +28,28 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# LOGGING CONFIG
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "WARNING",
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console"],
+            "level": os.getenv("DJANGO_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+    },
+}
 
 # Application definition
 
@@ -41,6 +64,7 @@ INSTALLED_APPS = [
     "apps.account.apps.AccountConfig",
     "apps.forum.apps.ForumConfig",
     "apps.notification.apps.NotificationConfig",
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 MIDDLEWARE = [
