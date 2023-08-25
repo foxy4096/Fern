@@ -1,11 +1,11 @@
-<center>
+<p align="center">
 <img src="apps/core/static/images/seedling_logo.png" height="200" alt="Fern Logo">
 
 
 # **Fern**
 
 
-</center>
+</p>
 
 *An open souce self-hosted forum for your community 🌱*
 
