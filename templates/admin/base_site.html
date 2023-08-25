@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Fern site admin 🌱') }}{% endblock %}
+{% block extrastyle %}
+<style>
+  /* :root{
+    --primary: #4b7c54 !important;
+    --secondary: #41905b !important;
+    --link-selected-fg: #41905b !important;
+    --link-fg: #41905b !important;
+    --link-hover-color: #41905b !important;
+    --selected-row: #3f3b34 !important;
+  } */
+</style>
+{% endblock %}
+  
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Fern administration 🌱') }}</a></h1>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -2,8 +2,10 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_resized import ResizedImageField
+from django.contrib.sessions.models import Session
 
 User = get_user_model()
+
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
@@ -27,7 +29,6 @@ class UserProfile(models.Model):
         to=User,
         related_name="muted_users",
     )
-
 
     def __str__(self):
         return self.user.get_username()
@@ -53,3 +54,15 @@ class UserPreference(models.Model):
     def __str__(self):
         return f"{self.user.get_username()}'s Preference"
 
+
+class UserSession(models.Model):
+    session = models.OneToOneField(
+        verbose_name=_("Session"), to=Session, on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(verbose_name=_("User"), to=User, on_delete=models.CASCADE)
+    ip_address = models.GenericIPAddressField(verbose_name=_("IP Address"))
+    user_agent = models.CharField(verbose_name=_("User Agent"), max_length=255)
+    
+
+    def __str__(self):
+        return self.user.get_username()

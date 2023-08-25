@@ -51,6 +51,11 @@ LOGGING = {
     },
 }
 
+ADMIN_SITE_TITLE = os.environ.get("ADMIN_SITE_TITLE", "Fern Administration 🌱")
+
+LOGIN_REDIRECT_URL = "core:frontpage"
+LOGOUT_REDIRECT_URL = "core:frontpage"
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -60,6 +65,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sites",
+    "django.contrib.redirects",
     "apps.core.apps.CoreConfig",
     "apps.account.apps.AccountConfig",
     "apps.forum.apps.ForumConfig",
@@ -67,14 +74,19 @@ INSTALLED_APPS = [
     "django_cleanup.apps.CleanupConfig",
 ]
 
+SITE_ID = 1
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.contrib.redirects.middleware.RedirectFallbackMiddleware",
+    "apps.account.middleware.UserSessionMiddleware",
 ]
 
 ROOT_URLCONF = "Fern.urls"
@@ -82,7 +94,7 @@ ROOT_URLCONF = "Fern.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [

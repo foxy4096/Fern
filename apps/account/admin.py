@@ -1,11 +1,17 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.safestring import mark_safe
+from django.shortcuts import resolve_url
+from .models import User, UserPreference, UserProfile, UserSession
+from django.contrib.sessions.models import Session
 
-from .models import User, UserPreference, UserProfile
 
 avatar_display_html = lambda url: mark_safe(
-    f'<img src="{url}" width="80px" style="border-radius: 10px" />'
+    f'<img src="{url}" width="30px" style="border-radius: 100px" />'
+)
+
+user_display_link_html = lambda obj: mark_safe(
+    f'<a href="{resolve_url("admin:auth_user_change", obj.id)}">{obj.username}</a>'
 )
 
 
@@ -50,8 +56,8 @@ class UserPreferenceInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline, UserPreferenceInline)
     list_display = (
-        "profile_picture",
         "username",
+        "profile_picture",
         "email",
         "first_name",
         "last_name",
@@ -63,6 +69,24 @@ class UserAdmin(BaseUserAdmin):
     @admin.display(description="Profile Picture")
     def profile_picture(self, obj):
         return avatar_display_html(obj.userprofile.avatar.url)
+
+
+class UserSessionInline(admin.StackedInline):
+    """Stacked Inline View for UserSession"""
+
+    model = UserSession
+    autocomplete_fields = ["user"]
+    can_delete = False
+
+
+@admin.register(Session)
+class SessionAdmin(admin.ModelAdmin):
+    inlines = [UserSessionInline]
+    list_display = ("session_key", "expire_date", "display_user")
+
+    @admin.display(description="User")
+    def display_user(self, obj):
+        return user_display_link_html(obj.usersession.user)
 
 
 admin.site.unregister(User)
