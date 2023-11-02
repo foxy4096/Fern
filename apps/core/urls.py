@@ -1,9 +1,10 @@
-from django.views.generic import TemplateView
 from django.urls import path
+from . import views
 
 app_name = "core"
 urlpatterns = [
+    path("", views.FrontpageView.as_view(), name="frontpage"),
     path(
-        "", TemplateView.as_view(template_name="core/frontpage.html"), name="frontpage"
+        "convert/md/", views.convert_markdown_to_html, name="convert_markdown_to_html"
     ),
 ]

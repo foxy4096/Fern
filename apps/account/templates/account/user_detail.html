@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load convert_markdown %}
+{% load humanize %}
+
+
+{% block title %}
+Summary - {{ tuser.get_username }}
+{% endblock title %}
+
+
+
+{% block content %}
+{% include 'account/islands/user_summary_block.html' %}
+<div class="block mt-3" style="border-top: 1px solid rgb(58, 58, 58); 
+    border-bottom: 1px solid rgb(58, 58, 58); 
+    padding-top: 10px; 
+    padding-bottom: 10px;">
+    <span>
+        <span class="has-text-weight-bold">
+            Joined:
+        </span>
+        {{ tuser.date_joined }}</span>
+</div>
+<div class="tabs is-centered is-fullwidth">
+    <ul>
+        <li class="is-active"><a>Summary</a></li>
+        {% if tuser == user %}
+        <li><a href="{% url 'user_sessions:session_list' %}">Activity</a></li>
+        <li><a>Notification</a></li>
+        <li><a>Message</a></li>
+        <li><a href="{% url 'account:user_preference' tuser.username %}">Preference</a></li>
+        {% endif %}
+    </ul>
+</div>
+
+<div class="columns is-multiline">
+    <div class="column">
+        <h5 class="title is-5">Top Thread</h5>
+        
+        {% for thread in tuser_threads %}
+        <div>{{ thread.created_at | naturaltime }}</div>
+        <p class="subtitle is-5">
+            <a href="{% url 'forum:thread_detail' thread.id %}">
+                {{ thread.title }}
+            </a>
+        </p>
+        <hr>
+        {% empty %}
+        <p class="subtitle">Nothing to see here :[</p>
+        {% endfor %}
+        
+    </div>
+    <div class="column">
+        <h5 class="title is-5">Top Reply</h5>
+        {% for reply in tuser_replies %}
+        <div>{{ reply.created_at | naturaltime }}</div>
+        <p class="subtitle is-5">
+            <a href="{% url 'forum:post_detail' reply.thread.id reply.id %}">
+                {{ reply.thread.title }}
+            </a>
+        </p>
+        <hr>
+        {% empty %}
+        <p class="subtitle">Nothing to see here :[</p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

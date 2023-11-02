@@ -1,0 +1,6 @@
+{% for message in messages %}
+<article class="notification is-{{message.tags}}">
+        <button class="delete is-small" aria-label="delete" _="on click remove closest .notification"></button>
+        {{ message }}
+</article>
+{% endfor %}

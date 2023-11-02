@@ -1,17 +1,20 @@
 {% extends 'base.html' %}
-
+{% load bulma_tags %}
 
 {% block title %}
-    Login
+Login
 {% endblock title %}
-    
+
 
 
 {% block content %}
-    <form method="post">
-        {{ form.as_p }}
-        {% csrf_token %}
-        <button type="submit">Login</button>
-    </form>
+<h1 class="title">Login</h1>
+<form method="post">
+    {{ form | bulma }}
+    {% csrf_token %}
+    <button type="submit" class="button is-success">Login</button>
+    <br>
+    <br>
+    <small>Don't have an Account? <a href="{% url 'account:signup' %}">Sign Up</a></small>
+</form>
 {% endblock content %}
-    

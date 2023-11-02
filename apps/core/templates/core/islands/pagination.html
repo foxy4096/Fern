@@ -1,0 +1,8 @@
+<div {% if page.has_next %} hx-get="?q={{query}}&page={{ page.next_page_number }}" hx-replace-url="true"
+    hx-trigger="revealed" hx-swap="outerHTML"
+    {% endif %}>
+    {% include 'islands/loader.html' %}
+    <noscript>
+        {% include 'core/islands/pagination_buttons.html' %}
+    </noscript>
+</div>

@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-%&v%w%+0a0d_4y%#vg+84of04)(6j4h2+0!@57me0!3gmclefq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 # LOGGING CONFIG
 
@@ -59,19 +59,29 @@ LOGOUT_REDIRECT_URL = "core:frontpage"
 # Application definition
 
 INSTALLED_APPS = [
+    "maintenance_mode",
+    "daphne",
+    "channels",
     "django.contrib.admin",
+    "django.contrib.admindocs",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sites",
+    "django.contrib.humanize",
     "django.contrib.redirects",
     "apps.core.apps.CoreConfig",
     "apps.account.apps.AccountConfig",
     "apps.forum.apps.ForumConfig",
     "apps.notification.apps.NotificationConfig",
+    "apps.polls.apps.PollsConfig",
     "django_cleanup.apps.CleanupConfig",
+    "bulma",
+    "user_sessions",
+    "debug_toolbar",
+    "template_partials",
 ]
 
 SITE_ID = 1
@@ -86,8 +96,18 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "django.contrib.redirects.middleware.RedirectFallbackMiddleware",
-    "apps.account.middleware.UserSessionMiddleware",
+    "user_sessions.middleware.SessionMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "maintenance_mode.middleware.MaintenanceModeMiddleware",
 ]
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+DEBUG_TOOLBAR_CONFIG = {"ROOT_TAG_EXTRA_ATTRS": "hx-preserve"}
+
+SESSION_ENGINE = "user_sessions.backends.db"
 
 ROOT_URLCONF = "Fern.urls"
 
@@ -102,13 +122,26 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.core.context_processors.is_htmx",
+                "apps.core.context_processors.core_config",
+                "apps.notification.context_processors.get_notification_info",
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = "Fern.wsgi.application"
+ASGI_APPLICATION = "Fern.asgi.application"
 
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -167,3 +200,16 @@ MEDIA_ROOT = BASE_DIR / "media"
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+# NAVBAR CONFIG
+
+NAVBAR_CONFIG = {
+    "LOGO_PATH": f"{STATIC_URL}images/seedling_logo.png",
+    "LINKS": [
+        {"name": "Home", "url": "/"},
+        {"name": "Polls", "url": "/polls/create/"},
+        {"name": "Admin", "url": "/admin/", "boost": False},
+    ],
+    "ALLOW_DOC_LINKS": True,
+}

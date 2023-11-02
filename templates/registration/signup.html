@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load bulma_tags %}
+
+{% block title %}
+Signup
+{% endblock title %}
+
+
+
+{% block content %}
+<h1 class="title">Signup</h1>
+    <form method="post">
+        {{ form | bulma }}
+        {% csrf_token %}
+        <button type="submit" class="button is-success">Signup</button>
+        <br>
+    <br>
+    <small>Already have an Account? <a href="{% url 'account:login' %}">Log In</a></small>
+    </form>
+{% endblock content %}

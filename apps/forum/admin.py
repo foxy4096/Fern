@@ -1,6 +1,7 @@
 from django.contrib import admin
-
-from .models import Category, Post
+from django.db import models
+from .models import Category, Post, Thread
+from apps.core.widgets import MarkdownWidget
 
 
 @admin.register(Category)
@@ -9,13 +10,37 @@ class CategoryAdmin(admin.ModelAdmin):
     list_per_page = 10
     ordering = ["name"]
 
+
+@admin.register(Thread)
+class ThreadAdmin(admin.ModelAdmin):
+    list_display = ["title", "category", "creator", "is_locked"]
+    list_filter = ["created_at", "is_locked"]
+    list_select_related = True
+    search_fields = ["catrgory", "creator__username", "title"]
+    actions = ["lock_thread", "unlock_thread"]
+    autocomplete_fields = ["creator", "category"]
+
+    @admin.action(description="Lock selected threads")
+    def lock_thread(self, request, queryset):
+        queryset.update(is_locked=True)
+        self.message_user(request, "Selected threads are locked")
+
+
+    @admin.action(description="Unlock selected threads")
+    def unlock_thread(self, request, queryset):
+        queryset.update(is_locked=False)
+        self.message_user(request, "Selected threads are unlocked")
+
+
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    search_fields = ["title"]
-    autocomplete_fields = ["author", "categories", "likes", "reply_to"]
-    list_display = ["id", "title", "author", "status", "created_at", "updated_at"]
+    search_fields = ["body", "author__username", "thread__title"]
+    formfield_overrides = {models.TextField: {"widget": MarkdownWidget()}}
+    autocomplete_fields = ["author", "likes", "parent", "thread"]
+    list_select_related = True
+    list_display = ["__str__", "author", "status", "created_at", "updated_at"]
     list_per_page = 10
-    list_editable = ["title", "status"]
+    list_editable = ["status"]
     actions = ["make_publish"]
     list_filter = ["status", "created_at", "updated_at"]
 

@@ -1,0 +1,18 @@
+{% load humanize %}
+<div class="box" style="background-color: transparent; border-left: 0.5rem rgb(61, 61, 61) solid; border-radius: 0%;">
+    {% for category in categories %}
+    <div class="media">
+        <div class="media-content">
+            <h5 class="title is-5">
+                {{ category.name }}
+            </h5>
+            {% for thread in category.get_recent_3_threads %}
+            <a href="{% url 'forum:thread_detail' thread.id %}">
+                {{ thread.title }}
+            </a>
+            <br>
+            {% endfor %}
+            {{ category.get_recent_3_threads.count }} Total
+        </div>
+    </div>
+    {% endfor %}

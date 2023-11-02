@@ -1,0 +1,63 @@
+{% load convert_markdown %}
+{% load user_mention %}
+{% load humanize %}
+{% load bulma_tags %}
+
+
+{% if not post.parent %}
+{% endif %}
+{% with post.author as author %}
+<div class="box" id="post-{{ post.id }}">
+    <div class="tags">
+
+        {% if post.parent and reply_button|default:True == True %}
+        <p class="subtitle tag is-dark" hx-boost="false">
+            <span class="icon">
+                <img src="{{ post.parent.author.userprofile.avatar_image }}" style="width: 15px; border-radius: 50%;"
+                    alt="">
+            </span>
+            <span>
+                <a href="{% url 'forum:post_detail' post.thread.id post.parent.id %}"
+                    _="on click halt the event go to #post-{{ post.parent.id }} smoothly">
+                    #{{ post.parent.id }}</a>
+            </span>
+        </p>
+        <p class="subtitle tag is-dark" hx-boost="false" title="">
+            <span>
+                <a href="{% url 'forum:post_detail' post.thread.id post.id %}"
+                    _="on click halt the event go to #post-{{ post.id }} smoothly">🔗#{{ post.id }}</a>
+            </span>
+        </p>
+        </span>
+        {% endif %}
+    </div>
+
+    <div class="media">
+        <div class="media-left">
+            <figure class="image is-48x48">
+                <img src="{{ author.userprofile.avatar_image }}" alt="User Avatar" class="is-rounded">
+            </figure>
+        </div>
+        <div class="media-content">
+            {% include 'account/islands/user_dropdown.html' with with_name=True with_image=False %}
+            <br>
+        </div>
+        <div class="media-right tags">
+            <span class="tag">
+                {{ post.created_at | naturaltime }}
+            </span>
+            {% if post.author == user %}
+            <div class="tag is-link">Edit</div>
+            <div class="tag is-danger">Delete</div>
+            {% endif %}
+        </div>
+    </div>
+    {% endwith %}
+    <br>
+    <div class="content">
+        {{ post.body | convert_markdown | user_mention | safe }}
+    </div>
+    {% if reply_button|default:True == True and not post.thread.is_locked %}
+    {% include 'forum/islands/reply_button.html' %}
+    {% endif %}
+</div>

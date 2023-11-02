@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Post
+{% endblock title %}
+{% block content %}
+<h1 class="title is-2">Create Reply</h1>
+<p class="subtitle">
+    <a href="{% url 'forum:thread_detail' post.thread.id %}">&LeftArrow; Back</a>
+</p>
+    {% include 'forum/islands/post_block.html' with reply_button="False" %}
+{% include 'forum/islands/reply_form.html' with cancel_button="False" %}
+{% endblock content %}

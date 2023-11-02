@@ -1,18 +1,17 @@
 {% extends 'base.html' %}
 {% block title %} Home {% endblock title %}
+
 {% block content %}
-<h1>Welcome to Fern 🌱</h1>
+<div class="content mx-6">
+    <a href="{% url 'forum:thread_create' %}" class="button is-primary">Create Thread</a>
+    <a href="{% url 'polls:index' %}" class="button is-link">Create Poll</a>
+</div>
+<div class="is-hidden-mobile">
+    {% include 'core/islands/frontpage_desktop_partial.html' %}
+</div>
+<div class="is-hidden-tablet">
+    {% include 'core/islands/frontpage_mobile_partial.html' %}
+</div>
 
-{% if not user.is_authenticated %}
-<a href="{% url 'account:login' %}">Login</a>
-{% else %}
-<p>You are currently Logged as {{ user }}</p>
-<a href="{% url 'account:logout' %}">Logout</a>
-<hr />
-<h3>Your Browser Sessions</h3>
 
-{% for usession in user.usersession_set.all %}
-<p>{{ usession.ip_address }} - {{ usession.user_agent }} ({{ usession.session.session_key }})</p>
-<br />
-{% endfor %} 
-{% endif %} {% endblock content %}
+{% endblock content %}

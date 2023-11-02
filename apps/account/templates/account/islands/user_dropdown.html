@@ -1,0 +1,42 @@
+{% load convert_markdown %}
+{% load user_mention %}
+
+{% load humanize %}
+<div class="dropdown is-hoverable">
+    <div class="dropdown-trigger">
+        <p class="{{ style_class|default:'subtitle' }}">
+            <a href="{% url 'account:user_detail' author.username %}" target="{{ target|default:'_self' }}">
+                {{ mention_symbol }}{{ author }}
+            </a>
+        </p>
+        {% if with_name %}
+        {{ author.get_full_name }}
+        {% endif %}
+
+    </div>
+    <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="min-width: 25rem; padding-top: 10px;">
+        <div class="dropdown-content">
+            <div class="dropdown-item content">
+                {% if with_image %}
+                <img src="{{ author.userprofile.avatar.url }}" class="is-rounded" alt="user profile image"
+                    style="height: 5em; border-radius: 50%;">
+                {% endif %}
+                    <h4 class="title is-6">{{ author.get_full_name }}</h4>
+                    <p class="subtitle is-6">@{{ author }}</p>
+
+                <div>{{ author.userprofile.bio | convert_markdown:False | safe }}</div>
+                
+                {% if author.userprofile.loaction %}
+                <p>
+                    <span class="icon">
+                        <i class="bi bi-geo-alt"></i>
+                    </span>
+                    <span>
+                        {{ author.userprofile.location }}
+                    </span>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

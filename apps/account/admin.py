@@ -1,9 +1,11 @@
 from django.contrib import admin
+from apps.core.widgets import MarkdownWidget
+from django.db import models
+
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.safestring import mark_safe
 from django.shortcuts import resolve_url
-from .models import User, UserPreference, UserProfile, UserSession
-from django.contrib.sessions.models import Session
+from .models import User, UserPreference, UserProfile
 
 
 avatar_display_html = lambda url: mark_safe(
@@ -19,6 +21,7 @@ class UserProfileInline(admin.StackedInline):
     model = UserProfile
     can_delete = False
     extra = 0
+    formfield_overrides = {models.TextField: {"widget": MarkdownWidget()}}
     fieldsets = (
         (
             "User Profile",
@@ -26,16 +29,20 @@ class UserProfileInline(admin.StackedInline):
                 "fields": [
                     "bio",
                     "avatar",
+                    "use_gravtar",
                     "profile_picture",
+                    "header",
+                    "location",
+                    "website",
                 ]
             },
         ),
     )
     readonly_fields = ["profile_picture"]
 
-    @admin.display(description="Profile Picture")
+    @admin.display(description="Avatar")
     def profile_picture(self, obj):
-        return avatar_display_html(obj.avatar.url)
+        return avatar_display_html(obj.avatar_image())
 
 
 class UserPreferenceInline(admin.StackedInline):
@@ -56,8 +63,8 @@ class UserPreferenceInline(admin.StackedInline):
 class UserAdmin(BaseUserAdmin):
     inlines = (UserProfileInline, UserPreferenceInline)
     list_display = (
-        "username",
         "profile_picture",
+        "username",
         "email",
         "first_name",
         "last_name",
@@ -66,27 +73,9 @@ class UserAdmin(BaseUserAdmin):
     list_display_links = ("profile_picture", "username")
     ordering = ["username"]
 
-    @admin.display(description="Profile Picture")
+    @admin.display(description="Avatar")
     def profile_picture(self, obj):
-        return avatar_display_html(obj.userprofile.avatar.url)
-
-
-class UserSessionInline(admin.StackedInline):
-    """Stacked Inline View for UserSession"""
-
-    model = UserSession
-    autocomplete_fields = ["user"]
-    can_delete = False
-
-
-@admin.register(Session)
-class SessionAdmin(admin.ModelAdmin):
-    inlines = [UserSessionInline]
-    list_display = ("session_key", "expire_date", "display_user")
-
-    @admin.display(description="User")
-    def display_user(self, obj):
-        return user_display_link_html(obj.usersession.user)
+        return avatar_display_html(obj.userprofile.avatar_image())
 
 
 admin.site.unregister(User)

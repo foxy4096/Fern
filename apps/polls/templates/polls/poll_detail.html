@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Poll
+{% endblock title %}
+{% block content %}
+{% include 'polls/islands/question_block.html' %}
+
+
+    
+<div class="control box">
+    {% for choice in question.choice_set.all %}
+    <label class="radio block" style="margin-bottom: 20px !important;" {% if is_voted %} disabled
+        {% endif %}>
+        <input type="radio" name="rsvp" {% if is_voted %} disabled {% endif %}>
+        {{ choice }}
+    </label>
+    <br>
+    {% endfor %}
+</div>
+<div class="control">
+    <a href="#" class="button is-info">Vote</a>
+</div>
+{% endblock content %}

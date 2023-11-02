@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Poll
+{% endblock title %}
+{% block content %}
+<h1 class="title is-2">My Poll</h1>
+<hr>
+
+{% for question in questions %}
+{% include 'polls/islands/question_block.html' %}
+{% endfor %}
+
+{% endblock content %}

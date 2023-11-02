@@ -1,0 +1,4 @@
+{% for child in post.get_replies %}
+{% include 'forum/islands/post_block.html' with post=post %}
+{% include 'forum/islands/reply_list.html' with post=child.childeren.all %}
+{% endfor %}

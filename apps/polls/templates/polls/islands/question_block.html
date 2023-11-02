@@ -1,0 +1,17 @@
+<div class="media box">
+    <div class="media-content">
+        <div class="content">
+            <p class="subtitle is-3">
+                {{ question.question_text }}
+            </p>
+        </div>
+    </div>
+    <div class="media-right">
+        <div class="buttons">
+            {% if user == question.created_by %}
+            <a href="{% url 'polls:poll_detail' question.id %}" class="button is-info">Edit</a>
+            <a href="#" class="button is-danger">Delete</a>
+            {% endif %}
+        </div>
+    </div>
+</div>

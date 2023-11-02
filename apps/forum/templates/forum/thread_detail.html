@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{{ thread.title }}
+{% endblock title %}
+
+{% block content %}
+<div class="column is-9">
+    {% include 'forum/islands/thread_header.html' %}
+
+    {% if thread.is_locked %}
+    <article class="message is-danger">
+        <div class="message-header">
+            <p>Alert</p>
+        </div>
+        <div class="message-body">
+            The Thread is Locked
+        </div>
+    </article>
+    {% endif %}
+
+    {% if posts.has_previous %}
+    {% include 'core/islands/pagination_buttons.html' with page=posts %}
+    {% endif %}
+    
+    {% include 'forum/islands/post_list.html' with revsered_paginator=True %}
+    {% if thread.is_locked %}
+    <p class="subtitle">You Cannot reply to the post in this thread.</p>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

@@ -1,0 +1,6 @@
+{% for post in posts %}
+{% include 'forum/islands/post_block.html' %}
+{% endfor %}
+
+
+{% include 'core/islands/pagination.html' with page=posts %}

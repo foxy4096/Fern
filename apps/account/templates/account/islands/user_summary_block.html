@@ -1,0 +1,42 @@
+{% load convert_markdown %}
+{% load user_mention %}
+
+
+<div class="card">
+    {% if tuser.userprofile.header %}
+    <div class="card-image">
+        <figure class="image is-16by4">
+            <img src="{{ tuser.userprofile.header.url }}" alt="Placeholder image">
+        </figure>
+    </div>
+    {% endif %}
+    <div class="card-content">
+        <figure class="image is-128x128">
+            <img src="{{ tuser.userprofile.avatar_image }}" alt="User Avatar" class="is-rounded">
+        </figure>
+        <br>
+        <h1 class="title">{{ tuser.get_username }}</h1>
+        <p class="subtitle">{{ tuser.get_full_name }}</p>
+
+        {% if tuser.userprofile.location %}
+        <span class="icon"><i class="bi bi-geo-alt"></i></span>
+        <span>{{ tuser.userprofile.location }}</span>
+        <br>
+        {% endif %}
+
+        {% if tuser.userprofile.website %}
+        <span class="icon">
+            <i class="bi bi-box-arrow-up-left"></i>
+        </span>
+        <span>
+            <a href="{{ tuser.userprofile.website }}" target="_blank">
+                {{ tuser.userprofile.website }}
+            </a>
+        </span>
+        <br>
+        {% endif %}
+        <div class="content my-3">
+            {{ tuser.userprofile.bio | user_mention | convert_markdown | safe }}
+        </div>
+    </div>
+</div>

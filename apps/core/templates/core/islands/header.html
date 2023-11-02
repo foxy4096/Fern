@@ -1,0 +1,12 @@
+{% if title %}
+<section class="hero is-{{ tag|default:'success' }} is-small">
+    <div class="hero-body">
+        <p class="title">
+            {{ title }}
+        </p>
+        <p class="subtitle">
+            {{ subtitle }}
+        </p>
+    </div>
+</section>
+{% endif %}

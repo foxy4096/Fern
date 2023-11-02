@@ -5,17 +5,15 @@ from django.utils.translation import gettext_lazy as _
 
 from apps.account.models import User
 
-
 class NotificationItemManager(models.Manager):
     def get_unread_count(self, user):
-        return NotificationItem.objects.filter(receiver=user, is_read=False).count()
+        return self.filter(notification__receiver=user, is_read=False).count()
 
     def get_notification_items_for(self, object_type, object_id):
         content_type = ContentType.objects.get_for_model(object_type)
-        return NotificationItem.objects.select_related("notification").filter(
+        return self.select_related("notification").filter(
             content_type=content_type, object_id=object_id
         )
-
 
 class Notification(models.Model):
     sender = models.ForeignKey(
@@ -30,16 +28,6 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         related_name="receiver",
     )
-
-    def __str__(self):
-        return f"{self.sender.username} -> {self.receiver.username}"
-
-
-class NotificationItem(models.Model):
-    objects = NotificationItemManager()
-    notification = models.ForeignKey(
-        verbose_name=_("Notification"), to=Notification, on_delete=models.CASCADE
-    )
     verb = models.CharField(verbose_name=_("Verb"), max_length=255)
     is_read = models.BooleanField(verbose_name=_("Is Read"), default=False)
     created_at = models.DateTimeField(verbose_name=_("Created At"), auto_now_add=True)
@@ -48,3 +36,8 @@ class NotificationItem(models.Model):
     )
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
+
+    def __str__(self):
+        return f"{self.sender.username} → {self.receiver.username}"
+
+    objects = NotificationItemManager()

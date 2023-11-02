@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load bulma_tags %}
+{% load convert_markdown %}
+{% load user_mention %}
+
+
+{% block title %}
+Preference - {{ tuser.get_username }}
+{% endblock title %}
+
+
+
+{% block content %}
+{% include 'account/islands/user_summary_block.html' %}
+<div class="block mt-3" style="border-top: 1px solid rgb(58, 58, 58); 
+    border-bottom: 1px solid rgb(58, 58, 58); 
+    padding-top: 10px; 
+    padding-bottom: 10px;">
+    <span>
+        <span class="has-text-weight-bold">
+            Joined:
+        </span>
+        {{ tuser.date_joined }}</span>
+</div>
+<div class="tabs is-centered is-fullwidth">
+    <ul>
+        <li><a href="{% url 'account:user_detail' tuser.username %}">Summary</a></li>
+        <li><a href="{% url 'user_sessions:session_list' %}">Activity</a></li>
+        <li><a>Invites</a></li>
+        {% if tuser == user %}
+        <li><a>Notification</a></li>
+        <li><a>Message</a></li>
+        <li class="is-active"><a>Preference</a></li>
+        {% endif %}
+    </ul>
+</div>
+<h4 class="title is-4">Username</h4>
+<p class="subtitle is-6">
+    {{ tuser.get_username }}
+</p>
+<p>
+    People can mention you as @{{ tuser.get_username }}
+</p>
+<br>
+<form action="." method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <h4 class="title is-4">General Info</h4>
+    {{ uform | bulma }}
+    {{ pform | bulma }}
+    <h4 class="title is-4">Profile Picture</h4>
+    <figure class="image is-64x64 block">
+        <img src="{{ tuser.userprofile.avatar_image }}" alt="User Profile Picture" loading="lazy" class="is-rounded">
+    </figure>
+    <div class="field" hx-boost="false">
+        {{ aform.as_div  }}
+        <p class="help">If the uploaded image is not shown, make sure to deselect the Use Gravatar</p>
+    </div>
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-primary">Save</button>
+            {% include 'islands/loader.html' with centered=False %}
+
+        </div>
+    </div>
+</form>
+{% endblock content %}

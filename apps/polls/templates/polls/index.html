@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Poll
+{% endblock title %}
+{% block content %}
+<h1 class="title is-2">Create Poll</h1>
+<p class="subtitle">First, enter the Question Text. Then, you’ll be able to add choices.</p>
+<form action="." method="POST">
+    {{ qform | bulma }}
+    {% csrf_token %}
+    <div class="field">
+        <div class="control">
+            <div class="buttons">
+                <button type="submit" class="button is-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</form>
+<hr>
+<h1 class="title">Current Polls</h1>
+
+
+{% for question in questions %}
+{% include 'polls/islands/question_block.html' %}
+{% endfor %}
+
+
+{% endblock content %}

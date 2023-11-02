@@ -1,0 +1,101 @@
+{% load static %}
+<nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <a class="navbar-item" href="{% url 'core:frontpage' %}">
+            <img src="{{ LOGO_PATH }}" width="30" alt="Logo" title="Fern 🌱">
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" _="on click toggle .is-active on .navbar-menu
+            on click toggle .is-active on me
+            ">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+
+    <div class="navbar-menu">
+        <div class="navbar-start">
+
+            {% for link in LINKS %}
+            <a class="navbar-item" href="{{ link.url }}" hx-boost="{{ link.boost }}">
+                {{ link.name }}
+            </a>
+            {% endfor %}
+
+            {% if ALLOW_DOC_LINKS %}
+            <a class="navbar-item">
+                Documentation
+            </a>
+            {% endif %}
+            <div class="navbar-item has-dropdown is-hoverable">
+                <a class="navbar-link">
+                    <span>More</span><span class="icon">📦</span>
+                </a>
+
+                <div class="navbar-dropdown">
+                    <a class="navbar-item">
+                        About
+                    </a>
+                    <a class="navbar-item">
+                        Jobs
+                    </a>
+                    <a class="navbar-item">
+                        Contact
+                    </a>
+                    <hr class="navbar-divider">
+                    <a class="navbar-item">
+                        Report an issue
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    {% if user.is_authenticated %}
+                    <div class="dropdown is-hoverable is-right" style="padding-right: 10px;">
+                        <div class="dropdown-trigger">
+                            <a class="button is-ghost" href="{% url 'account:user_detail' user.username %}"
+                                aria-haspopup="true" aria-controls="dropdown-menu4">
+                                <article class="image is-24x24">
+                                    <img src="{{ user.userprofile.avatar_image }}" alt="{{ user.username }}'s Avatar"
+                                        class="is-rounded {{ user.profile.status }}" width="100" height="100">
+                                </article>
+                            </a>
+                        </div>
+                        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                            <div class="dropdown-content">
+                                <div class="dropdown-item">
+                                    <a href="{% url 'account:user_detail' user.username %}">Your Profile</a>
+                                </div>
+                                <div class="dropdown-item">
+                                    <a href="{% url 'notification:notification_page' %}">Notifications
+                                        ({{ notification_count }})</a>
+                                </div>
+                                <div class="dropdown-item">
+                                    <p>Notifications</p>
+                                </div>
+                                <div class="dropdown-item">
+                                    <p>Notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="button is-danger" href="{% url 'account:logout' %}">
+                        Log out
+                    </a>
+                    {% else %}
+                    <a class="button is-success" href="{% url 'account:signup' %}">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a class="button" href="{% url 'account:login' %}">
+                        Log in
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
