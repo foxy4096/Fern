@@ -1,5 +1,5 @@
 {% load static %}
-<nav class="navbar" role="navigation" aria-label="main navigation">
+<nav class="navbar fern-nav mx-6 my-4 p-2" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{% url 'core:frontpage' %}">
             <img src="{{ LOGO_PATH }}" width="30" alt="Logo" title="Fern 🌱">
@@ -59,9 +59,9 @@
                         <div class="dropdown-trigger">
                             <a class="button is-ghost" href="{% url 'account:user_detail' user.username %}"
                                 aria-haspopup="true" aria-controls="dropdown-menu4">
-                                <article class="image is-24x24">
+                                <article class="image is-36x36">
                                     <img src="{{ user.userprofile.avatar_image }}" alt="{{ user.username }}'s Avatar"
-                                        class="is-rounded {{ user.profile.status }}" width="100" height="100">
+                                        class="{{ user.profile.status }} is-rounded" width="100" height="100">
                                 </article>
                             </a>
                         </div>
@@ -83,15 +83,18 @@
                             </div>
                         </div>
                     </div>
-                    <a class="button is-danger" href="{% url 'account:logout' %}">
+                    <a class="button is-danger shadow" href="{% url 'account:logout' %}">
                         Log out
                     </a>
                     {% else %}
-                    <a class="button is-success" href="{% url 'account:signup' %}">
+                    <a class="button is-white special-dark" href="{% url 'account:signup' %}">
                         <strong>Sign up</strong>
                     </a>
                     <a class="button" href="{% url 'account:login' %}">
-                        Log in
+                        <span class="icon"><i class="bi bi-joystick"></i></span>
+                        <span>
+                            Log in
+                        </span>
                     </a>
                     {% endif %}
                 </div>

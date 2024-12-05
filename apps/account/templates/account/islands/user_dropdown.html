@@ -25,7 +25,10 @@
                     <p class="subtitle is-6">@{{ author }}</p>
 
                 <div>{{ author.userprofile.bio | convert_markdown:False | safe }}</div>
-                
+                <br>
+                <a href="{{ author.userprofile.website }}">
+                    {{ author.userprofile.website }}
+                </a>
                 {% if author.userprofile.loaction %}
                 <p>
                     <span class="icon">

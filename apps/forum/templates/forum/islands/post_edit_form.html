@@ -1,0 +1,16 @@
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+<form action="{% url 'forum:post_edit' post.id %}" method="POST" hx-post="{% url 'forum:post_edit' post.id %}"
+    hx-target="#post-{{ post.id }}" hx-swap="outerHTML">
+    {{ form | bulma }}
+    {% csrf_token %}
+    <div class="field">
+        <div class="control">
+            <div class="buttons">
+                <button type="submit" class="button is-primary">Save</button>
+                <a hx-get="{% url 'forum:post_block' post.id %}" class="button">Cancel</a>
+            </div>
+        </div>
+    </div>
+</form>

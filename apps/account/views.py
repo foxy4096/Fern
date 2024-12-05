@@ -4,6 +4,7 @@ from django.contrib import messages
 from apps.core.templatetags.convert_markdown import convert_markdown
 from apps.account.templatetags.user_mention import user_mention
 
+from django.contrib.auth.decorators import login_required
 from apps.account.forms import (
     UserEditForm,
     UserProfileForm,
@@ -55,6 +56,7 @@ def user_detail(request, username):
     return render(request, "account/user_detail.html", context)
 
 
+@login_required
 def user_preference(request, username):
     """
     View to handle user preferences and profile updates.
@@ -66,7 +68,9 @@ def user_preference(request, username):
     Returns:
         HttpResponse: A response with the user's profile preferences form.
     """
-    tuser = get_object_or_404(User, username=username)
+    if username != request.user.username:
+        return redirect("account:user_detail", username=username)
+    tuser = get_object_or_404(User, username=request.user)
     if request.method == "POST":
         uform = UserEditForm(request.POST, instance=tuser)
         pform = UserProfileForm(request.POST, instance=tuser.userprofile)

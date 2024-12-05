@@ -1,7 +1,4 @@
 {% load static %}
-<p class="htmx-indicator 
-{% if centered|default:True %}
-has-text-centered
-{% endif %}">
-    <img src="{% static 'images/tail-spin.svg' %}" alt="Loading...">
+<p class="htmx-indicator has-text-centered">
+    <img src="{% static 'images/tail-spin.svg' %}" class="text-center" alt="Loading...">
 </p>

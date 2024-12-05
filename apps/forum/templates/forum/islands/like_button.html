@@ -1,0 +1,21 @@
+<div class="buttons" id="like-button-{{ post.id }}">
+    <a 
+    href="{% url 'forum:reply_create' post.id %}" 
+    hx-get="{% url 'forum:reply_form' post.id %}"
+    hx-target="#reply-button-{{ post.id }}"
+    hx-swpa="outerHTML"
+    class="button is-ghost">
+        <span class="icon">
+            
+            {% if user in post.likes.all %}
+                
+            <i class="bi bi-heart-fill"></i>
+            {% else %}
+            
+            <i class="bi bi-heart"></i>
+            {% endif %}
+                
+        </span>
+        <span>Like</span>
+    </a>
+</div>

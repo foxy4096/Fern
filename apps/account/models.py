@@ -2,7 +2,6 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from django_resized import ResizedImageField
-from django.contrib.sessions.models import Session
 from .utils import get_gravatar
 
 User = get_user_model()
@@ -21,6 +20,11 @@ class UserProfile(models.Model):
         max_length=500,
         blank=True,
         help_text=_("Tell us about yourself. (Markdown and BBCode Supported)"),
+    )
+    dark_mode = models.BooleanField(
+        verbose_name=_("Dark Mode"),
+        default=False,
+        help_text=_("Enable dark mode for the website"),
     )
     avatar = ResizedImageField(
         verbose_name=_("Profile Picture"),

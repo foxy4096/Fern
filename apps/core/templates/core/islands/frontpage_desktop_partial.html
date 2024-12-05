@@ -1,49 +1,72 @@
 {% load humanize %}
-<div class="box mx-6"
-    style="background-color: transparent; border-left: 0.5rem rgb(61, 61, 61) solid; border-radius: 0%;">
-    <div class="columns is-mutliline">
-        <div class="column is-4">
-            <h5 class="title is-5">
-                Category
-            </h5>
-        </div>
-        <div class="column is-2">
-            <h5 class="title is-5">
-                Topics
-            </h5>
-        </div>
-        <div class="column">
-            <h5 class="title is-5">
-                Threads
-            </h5>
+<div>
+    <div class="box m-0"
+        style="background-color: transparent; border-left: 0.5rem  solid; border-radius: 0%; box-shadow: none;">
+
+        <div class="columns is-mutliline">
+            <div class="column is-4">
+                <p class="subtitle is-4">
+                    Category
+                </p>
+            </div>
+            <div class="column is-2">
+                <p class="subtitle is-4">
+                    Topics
+                </p>
+            </div>
+            <div class="column">
+                <p class="subtitle is-4">
+                    Threads
+                </p>
+            </div>
         </div>
     </div>
     {% for category in categories %}
-    <div class="columns is-mutliline">
-        <div class="column is-4">
-            <h5 class="title is-5">
-                {{ category.name }}
-            </h5>
-            <p class="subtitle is-6">
-                {{ category.description }}
-            </p>
-        </div>
-        <div class="column is-1">
-            <span class="is-size-7">
-                {{ category.get_recent_3_threads.count }}
-            </span>
-        </div>
-        <div class="column">
-            <ul>
-                {% for thread in category.get_recent_3_threads %}
-                <li>
-                    <a href="{% url 'forum:thread_detail' thread.id %}">
-                        {{ thread.title }}
+    <div class="box m-0"
+        style="background-color: transparent; border-left: 0.5rem {{category.color}} solid; border-radius: 0%; box-shadow: none;">
+        <div class="columns is-mutliline">
+            <div class="column is-4">
+                <h5 class="title is-5">
+                    <a href="{% url 'forum:threads_by_category' category.slug %}">
+                        {{ category.name }}
                     </a>
-                    <small>{{ thread.created_at | naturaltime }}</small>
-                </li>
-                {% endfor %}
-            </ul>
+                </h5>
+                <p class="subtitle is-6">
+                    {{ category.description }}
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+
+                    {% for subcategory in category.subcategories.all %}
+                    <div style="display: flex; align-items: center; gap: 5px;">
+
+                        <div style="width: 10px; height: 10px; background-color: {{subcategory.color}}">
+
+                        </div>
+                        <a href="{% url 'forum:threads_by_category' subcategory.slug %}">
+                            {{ subcategory.name }}
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                </p>
+            </div>
+            <div class="column is-1">
+                <span class="is-size-7">
+                    {{ category.get_recent_3_threads.count }}
+                </span>
+            </div>
+            <div class="column">
+                <ul>
+                    {% for thread in category.get_recent_3_threads %}
+                    <li>
+                        <a href="{% url 'forum:thread_detail' thread.slug %}">
+                            {{ thread.title }}
+                        </a>
+                        <small>{{ thread.created_at | naturaltime }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
     {% endfor %}

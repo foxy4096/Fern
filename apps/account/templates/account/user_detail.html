@@ -40,7 +40,7 @@ Summary - {{ tuser.get_username }}
         {% for thread in tuser_threads %}
         <div>{{ thread.created_at | naturaltime }}</div>
         <p class="subtitle is-5">
-            <a href="{% url 'forum:thread_detail' thread.id %}">
+            <a href="{% url 'forum:thread_detail' thread.slug %}">
                 {{ thread.title }}
             </a>
         </p>
@@ -55,7 +55,7 @@ Summary - {{ tuser.get_username }}
         {% for reply in tuser_replies %}
         <div>{{ reply.created_at | naturaltime }}</div>
         <p class="subtitle is-5">
-            <a href="{% url 'forum:post_detail' reply.thread.id reply.id %}">
+            <a href="{% url 'forum:post_detail' reply.thread.slug reply.id %}">
                 {{ reply.thread.title }}
             </a>
         </p>

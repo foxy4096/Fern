@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Poll
+{% endblock title %}
+{% block content %}
+<h1 class="title is-2">Edit Poll</h1>
+<p class="subtitle">
+    <a href="{% url 'polls:poll_detail' question.id %}">&LeftArrow; Back</a>
+</p>
+<form action="." method="POST">
+    {{ qform | bulma }}
+    {% csrf_token %}
+    <div class="field">
+        <div class="control">
+            <div class="buttons">
+                <button type="submit" class="button is-primary">Save</button>
+                <a href="{% url 'polls:poll_choice_create' question.id %}" class="button is-link">Add Choice</a>
+            </div>
+        </div>
+    </div>
+</form>
+<br>
+{% if question.choices.all %}
+<div class="field">
+    <label class="label">Choices</label>
+    <ul>
+        {% for choice in question.choices.all %}
+        <div class="mb-2">
+            <li class="is-flex">
+                - {{ choice.choice_text }} |
+                <form action="{% url 'polls:poll_choice_delete' choice.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="ml-2 is-danger is-small">Delete</button>
+                </form>
+            </li>
+        </div>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+
+{% endblock content %}

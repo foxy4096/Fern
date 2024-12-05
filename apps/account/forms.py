@@ -65,7 +65,7 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = UserProfile
-        fields = ["location", "website", "bio", "use_gravtar"]
+        fields = ["location", "website", "bio", "use_gravtar", "dark_mode"]
         widgets = {
             "bio": MarkdownWidget(),
         }

@@ -8,23 +8,23 @@
 {% endif %}
 {% with post.author as author %}
 <div class="box" id="post-{{ post.id }}">
-    <div class="tags">
+    <div class="tags are-medium">
 
         {% if post.parent and reply_button|default:True == True %}
-        <p class="subtitle tag is-dark" hx-boost="false">
+        <p class="tag is-dark" hx-boost="false">
             <span class="icon">
                 <img src="{{ post.parent.author.userprofile.avatar_image }}" style="width: 15px; border-radius: 50%;"
                     alt="">
             </span>
             <span>
-                <a href="{% url 'forum:post_detail' post.thread.id post.parent.id %}"
+                <a href="{% url 'forum:post_detail' post.thread.slug post.parent.id %}"
                     _="on click halt the event go to #post-{{ post.parent.id }} smoothly">
                     #{{ post.parent.id }}</a>
             </span>
         </p>
-        <p class="subtitle tag is-dark" hx-boost="false" title="">
+        <p class="tag is-dark" hx-boost="false" title="">
             <span>
-                <a href="{% url 'forum:post_detail' post.thread.id post.id %}"
+                <a href="{% url 'forum:post_detail' post.thread.slug post.id %}"
                     _="on click halt the event go to #post-{{ post.id }} smoothly">🔗#{{ post.id }}</a>
             </span>
         </p>
@@ -47,7 +47,8 @@
                 {{ post.created_at | naturaltime }}
             </span>
             {% if post.author == user %}
-            <div class="tag is-link">Edit</div>
+            <a class="tag is-link" href="{% url 'forum:post_edit' post.id %}" hx-swap="innerHTML"
+                hx-get="{% url 'forum:post_edit' post.id %}" hx-target="#post-{{ post.id }}">Edit</a>
             <div class="tag is-danger">Delete</div>
             {% endif %}
         </div>
@@ -58,6 +59,19 @@
         {{ post.body | convert_markdown | user_mention | safe }}
     </div>
     {% if reply_button|default:True == True and not post.thread.is_locked %}
-    {% include 'forum/islands/reply_button.html' %}
+    <div class="level">
+        <div class="level-left">
+            <div class="level-item">
+
+                {% include 'forum/islands/reply_button.html' %}
+            </div>
+        </div>
+        <div class="level-right">
+            <div class="level-item">
+
+                {% include 'forum/islands/like_button.html' %}
+            </div>
+        </div>
+    </div>
     {% endif %}
 </div>

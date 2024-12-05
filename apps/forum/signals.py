@@ -26,13 +26,13 @@ def post_save_handler(sender, instance, created, **kwargs):
             )
 
 
-@receiver(post_save, sender=Post)
-def reply_save_handler(sender, instance, created, **kwargs):
-    if created and instance.parent.author != instance.author:
-        # Create a reply notification
-        Notification.objects.create(
-            sender=instance.author,
-            receiver=instance.parent.author,  # Assuming Reply has a reference to the parent post
-            verb=f"{instance.author.username} replied to your post.",
-            content_object=instance,
-        )
+# @receiver(post_save, sender=Post)
+# def reply_save_handler(sender, instance, created, **kwargs):
+#     if created and instance.parent.author.username != instance.author.username:
+#         # Create a reply notification
+#         Notification.objects.create(
+#             sender=instance.author,
+#             receiver=instance.parent.author,  # Assuming Reply has a reference to the parent post
+#             verb=f"{instance.author.username} replied to your post.",
+#             content_object=instance,
+#         )

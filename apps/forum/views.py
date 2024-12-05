@@ -2,8 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render, resolve_url
 
-from apps.forum.forms import PostCreationForm, ReplyCreationForm, ThreadCreationForm
-from apps.forum.models import Post, Thread
+from apps.forum.forms import (
+    PostCreationForm,
+    ReplyCreationForm,
+    ThreadCreationForm,
+    CategoryFilterForm,
+)
+from apps.forum.models import Post, Thread, Category
 from .islands import thread_post_list
 from apps.core.utils import paginate
 
@@ -31,11 +36,12 @@ def thread_create(request):
         create_initial_post(request.user, thread, pform)
 
         messages.success(request, "Your thread has been created!")
-        return redirect("forum:thread_detail", pk=thread.pk)
+        return redirect("forum:thread_detail", slug=thread.slug)
     elif request.method == "POST":
         messages.error(request, "There was an error in your thread creation.")
 
     return render(request, "forum/thread_create.html", {"tform": tform, "pform": pform})
+
 
 def create_thread(creator, tform):
     thread = tform.save(commit=False)
@@ -51,10 +57,10 @@ def create_initial_post(author, thread, pform):
     post.save()
 
 
-def thread_detail(request, pk):
-    thread = get_object_or_404(Thread, pk=pk)
+def thread_detail(request, slug):
+    thread = get_object_or_404(Thread, slug=slug)
     if is_htmx(request):
-        return thread_post_list(request, pk)
+        return thread_post_list(request, thread.pk)
     posts = paginate(request, thread.posts.all())
     return render(
         request,
@@ -63,7 +69,7 @@ def thread_detail(request, pk):
     )
 
 
-def post_detail(request, thread_pk, post_pk):
+def post_detail(request, thread_slug, post_pk):
     """
     Display the details of a post and provide a form for creating replies.
 
@@ -74,9 +80,45 @@ def post_detail(request, thread_pk, post_pk):
     Returns:
         HttpResponse: The rendered HTML response.
     """
-    thread = get_object_or_404(Thread, pk=thread_pk)
+    thread = get_object_or_404(Thread, slug=thread_slug)
     post = get_object_or_404(thread.posts.all(), pk=post_pk)
     return render(request, "forum/post_detail.html", {"post": post})
+
+
+@login_required
+def post_edit(request, pk):
+    """
+    Display a form for editing a post.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+        pk (int): The primary key of the post to edit.
+
+    Returns:
+        HttpResponse: The rendered HTML response.
+    """
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        form = PostCreationForm(request.POST, instance=post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your post has been updated!")
+            if is_htmx(request):
+                return render(
+                    request,
+                    "forum/islands/post_block.html",
+                    {"post": post},
+                )
+            return redirect("forum:thread_detail", slug=post.thread.slug)
+        else:
+            messages.error(request, "There was an error in your post update.")
+    else:
+        form = PostCreationForm(instance=post)
+    if is_htmx(request):
+        return render(
+            request, "forum/islands/post_edit_form.html", {"form": form, "post": post}
+        )
+    return render(request, "forum/post_edit.html", {"form": form, "post": post})
 
 
 @login_required
@@ -101,7 +143,7 @@ def reply_create(request, pk):
             reply.thread = post.thread
             reply.save()
             messages.success(request, "Your reply has been created!")
-            return redirect("forum:thread_detail", pk=post.thread.pk)
+            return redirect("forum:thread_detail", slug=post.thread.slug)
         else:
             messages.error(request, "There was an error in your reply creation.")
     else:
@@ -110,3 +152,25 @@ def reply_create(request, pk):
     return render(
         request, "forum/reply_create.html", {"reply_form": form, "post": post}
     )
+
+
+def threads_by_category(request, slug=""):
+    category = get_object_or_404(Category, slug=slug)
+    threads = Thread.objects.filter(category=category)
+    threads = paginate(request, threads)
+    category_filter_form = CategoryFilterForm(initial={"category": category})
+    return render(
+        request,
+        "forum/threads_by_category.html",
+        {"threads": threads, "category": category, "category_filter_form": category_filter_form},
+    )
+
+
+@login_required
+def like_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.user in post.likes.all():
+        post.likes.remove(request.user)
+    else:
+        post.likes.add(request.user)
+    return redirect("forum:thread_detail", slug=post.thread.slug)

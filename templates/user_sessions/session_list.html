@@ -4,7 +4,7 @@
 
 
 {% block title %}
-    Your Sessions
+Your Sessions
 {% endblock title %}
 {% block content %}
 {% include 'account/islands/user_summary_block.html' with tuser=user %}
@@ -12,27 +12,27 @@
     border-bottom: 1px solid rgb(58, 58, 58); 
     padding-top: 10px; 
     padding-bottom: 10px;">
-    <span>
-        <span class="has-text-weight-bold">
-            Joined:
-        </span>
-        {{ tuser.date_joined }}</span>
+  <span>
+    <span class="has-text-weight-bold">
+      Joined:
+    </span>
+    {{ tuser.date_joined }}</span>
 </div>
 <div class="tabs is-centered is-fullwidth">
-    <ul>
-        <li><a>Summary</a></li>
-        <li class="is-active"><a href="{% url 'user_sessions:session_list' %}">Activity</a></li>
-        <li><a>Invites</a></li>
-        <li><a>Notification</a></li>
-        <li><a>Message</a></li>
-        <li><a href="{% url 'account:user_preference' user.username %}">Preference</a></li>
-    </ul>
+  <ul>
+    <li><a>Summary</a></li>
+    <li class="is-active"><a href="{% url 'user_sessions:session_list' %}">Activity</a></li>
+    <li><a>Invites</a></li>
+    <li><a>Notification</a></li>
+    <li><a>Message</a></li>
+    <li><a href="{% url 'account:user_preference' user.username %}">Preference</a></li>
+  </ul>
 </div>
 
-  {% trans "<em>unknown on unknown</em>" as unknown_on_unknown %}
-  {% trans "<em>unknown</em>" as unknown %}
+{% trans "<em>unknown on unknown</em>" as unknown_on_unknown %}
+{% trans "<em>unknown</em>" as unknown %}
 
-  <h1 class="title">{% trans "Active Sessions" %}</h1>
+<h1 class="title">{% trans "Active Sessions" %}</h1>
 <div class="table-container">
   <table class="table is-fullwidth is-bordered">
     <thead>
@@ -43,27 +43,32 @@
       </tr>
     </thead>
     {% for object in object_list %}
-      <tr {% if object.session_key == session_key %}class="is-selected"{% endif %}>
-        <td>{{ object.ip|location|default_if_none:unknown|safe }} <small>({{ object.ip }})</small></td>
-        <td>{{ object.user_agent|device|default_if_none:unknown_on_unknown|safe }}</td>
-        <td>
-          {% if object.session_key == session_key %}
-            {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago (this session){% endblocktrans %}
-          {% else %}
-            {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago{% endblocktrans %}
-          {% endif %}
-        </td>
-      </tr>
+    <tr {% if object.session_key == session_key %}class="is-selected" {% endif %}>
+      <td>{{ object.ip|location|default_if_none:unknown|safe }} <small>({{ object.ip }})</small></td>
+      <td>{{ object.user_agent|device|default_if_none:unknown_on_unknown|safe }}</td>
+      <td>
+        {% if object.session_key == session_key %}
+        {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago (this session){% endblocktrans %}
+        {% else %}
+        {% blocktrans with time=object.last_activity|timesince %}{{ time }} ago{% endblocktrans %}
+        {% endif %}
+      </td>
+    </tr>
     {% endfor %}
   </table>
 </div>
 
-  {% if object_list.count > 1 %}
-    <form method="post" action="{% url 'user_sessions:session_delete_other' %}">
-      {% csrf_token %}
-      <p>{% blocktrans %}You can also end all other sessions but the current.
-        This will log you out on all other devices.{% endblocktrans %}</p>
-      <button type="submit" class="button is-warning">{% trans "End All Other Sessions" %}</button>
-    </form>
-  {% endif %}
+{% if object_list.count > 1 %}
+<form method="post" action="{% url 'user_sessions:session_delete_other' %}">
+  {% csrf_token %}
+  <p>{% blocktrans %}You can also end all other sessions but the current.
+    This will log you out on all other devices.{% endblocktrans %}</p>
+  <br>
+  <div class="field">
+    <div class="control">
+      <button type="submit" class="button is-warning is-responsive is-outlined">{% trans "End All Other Sessions" %}</button>
+    </div>
+  </div>
+</form>
+{% endif %}
 {% endblock %}

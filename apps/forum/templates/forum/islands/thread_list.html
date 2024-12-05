@@ -1,0 +1,16 @@
+<div class="media">
+    <div class="media-left">
+        <a href="{% url 'account:user_detail' thread.creator.username %}">
+            <figure class="image is-48x48">
+                <img src="{{ thread.creator.userprofile.avatar_image }}" alt="User Avatar" class="is-rounded">
+            </figure>
+        </a>
+    </div>
+    <div class="media-content">
+        <p class="subtitle">
+            <a href="{% url 'forum:thread_detail' thread.slug %}">
+                {{ thread }}
+            </a>
+        </p>
+    </div>
+</div>

@@ -1,27 +1,42 @@
-import markdown
-from markdown.inlinepatterns import Pattern
-from django.utils.safestring import mark_safe
+from markdown import Markdown
+from markdown.postprocessors import Postprocessor
+from markdown.extensions import Extension
+import re
+from django.template.loader import render_to_string
+from django.utils.safestring import mark_safe  # Ensure safe HTML output
 
 
-class PollExtension(markdown.Extension):
-    def extendMarkdown(self, md):
-        # Define a pattern for your poll syntax
-        poll_pattern = r"\[poll#(\d+)\]"
+class PollProcessor(Postprocessor):
+    """
+    Converts `[poll#id]` syntax in Markdown content to rendered poll elements.
+    """
 
-        # Add the PollPattern to the Markdown instance
-        md.inlinePatterns.register(
-            PollPattern(poll_pattern, self.getConfigs()), "poll", 75
-        )
+    POLL_PATTERN = r"\[poll#(\d+)\]"
+
+    def run(self, text: str) -> str:
+        """
+        Processes Markdown text, replacing `[poll#id]` patterns with rendered polls.
+
+        Args:
+            text (str): The Markdown content to be processed.
+
+        Returns:
+            str: The modified Markdown content with embedded poll elements.
+        """
+
+        def replace_poll(match):
+            poll_id = match.group(1)
+            poll_html = render_to_string(
+                "polls/islands/poll_block.html", {"poll_id": poll_id}
+            )
+            return mark_safe(poll_html)
+
+        # Escape user-generated content within the poll template (polls/islands/poll_block.html)
+        # ... (implement template escaping for title, description, options, etc.)
+
+        return re.sub(self.POLL_PATTERN, replace_poll, text)
 
 
-class PollPattern(Pattern):
-    def handleMatch(self, m):
-        # Extract the poll ID from the match
-        poll_id = m.group(1)
-
-        # Render HTML for the poll
-        poll_html = (
-            f'<div class="poll" data-poll-id="{poll_id}">Your Poll Content Here</div>'
-        )
-
-        return mark_safe(poll_html)
+class PollExtension(Extension):
+    def extendMarkdown(self, md: Markdown) -> None:
+        return md.inlinePatterns.register(PollProcessor(md), "poll", 175)

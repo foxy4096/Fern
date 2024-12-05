@@ -78,7 +78,9 @@ INSTALLED_APPS = [
     "apps.notification.apps.NotificationConfig",
     "apps.polls.apps.PollsConfig",
     "django_cleanup.apps.CleanupConfig",
+    "apps.autocomplete.apps.AutocompleteConfig",
     "bulma",
+    "colorfield",
     "user_sessions",
     "debug_toolbar",
     "template_partials",
@@ -208,7 +210,7 @@ NAVBAR_CONFIG = {
     "LOGO_PATH": f"{STATIC_URL}images/seedling_logo.png",
     "LINKS": [
         {"name": "Home", "url": "/"},
-        {"name": "Polls", "url": "/polls/create/"},
+        {"name": "Polls", "url": "/polls/"},
         {"name": "Admin", "url": "/admin/", "boost": False},
     ],
     "ALLOW_DOC_LINKS": True,

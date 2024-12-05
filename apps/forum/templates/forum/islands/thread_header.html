@@ -1,6 +1,12 @@
 {% load humanize %}
 <h2 class="title is-2">{{ thread.title }}</h2>
-<span class="tag">
+<p class="subtitle">
+    {% if user.is_staff %}
+    <a href="{% url 'admin:forum_thread_change' thread.id %}" hx-boost="false">&#9999; Staff Edit</a>
+    {% endif %}
+</p>
+
+<a href="{% url 'forum:threads_by_category' thread.category.slug %}" class="tag mb-5">
     {{ thread.category }}
-</span>
+</a>
 <hr>

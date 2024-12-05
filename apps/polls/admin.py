@@ -26,4 +26,4 @@ class QuestionAdmin(admin.ModelAdmin):
 
     @admin.display(description="No. of Choices")
     def choices_count(self, obj):
-        return obj.choice_set.count()
+        return obj.choices.count()

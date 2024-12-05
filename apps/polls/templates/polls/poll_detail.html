@@ -10,18 +10,29 @@ Create Poll
 {% include 'polls/islands/question_block.html' %}
 
 
-    
-<div class="control box">
-    {% for choice in question.choice_set.all %}
-    <label class="radio block" style="margin-bottom: 20px !important;" {% if is_voted %} disabled
-        {% endif %}>
-        <input type="radio" name="rsvp" {% if is_voted %} disabled {% endif %}>
-        {{ choice }}
-    </label>
-    <br>
-    {% endfor %}
-</div>
-<div class="control">
-    <a href="#" class="button is-info">Vote</a>
-</div>
+
+{% if question.choices %}
+<form action="{% url 'polls:poll_vote' question.id %}" method="POST">
+    {% csrf_token %}
+    <div class="control box">
+        {% for choice in question.choices.all %}
+        {% if user not in question.voted_by.all %}
+        <input type="radio" name="choice" value="{{ choice.id }}">
+        {% endif %}
+        {{ choice }} {% if user in question.voted_by.all %}<progress
+            class="progress is-{% cycle 'primary' 'link' 'success' 'info' 'warning' 'danger' %}"
+            value="{{ choice.vote_percentage }}" max="100">{{ choice.vote_percentage }} %</progress>
+        {% endif %}
+        </label>
+        <br>
+        {% endfor %}
+
+        <div class="field mt-4">
+            <div class="control">
+                <button class="button is-info">Vote</button>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</form>
 {% endblock content %}

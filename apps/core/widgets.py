@@ -42,7 +42,7 @@ class MarkdownWidget(Textarea):
             {
                 "hx-target": "#mdout",
                 "hx-trigger": "keyup delay:500ms changed, insertMarkdown",
-                "hx-post": "/convert/md/",
+                "hx-post": kwargs.get("convert_url", "/convert/md/"),
                 "style": "font-family: monospace; width: 650px; height: 200px;",
             }
         )

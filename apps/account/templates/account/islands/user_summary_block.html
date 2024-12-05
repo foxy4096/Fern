@@ -2,17 +2,15 @@
 {% load user_mention %}
 
 
-<div class="card">
+<div class="bg-transparent mx-auto w-4/5 shadow-none profile-block">
     {% if tuser.userprofile.header %}
-    <div class="card-image">
-        <figure class="image is-16by4">
-            <img src="{{ tuser.userprofile.header.url }}" alt="Placeholder image">
-        </figure>
-    </div>
+    <figure class="image is-16by4 profile-header">
+        <img src="{{ tuser.userprofile.header.url }}" class="profile-header-image" alt="Placeholder image">
+    </figure>
     {% endif %}
-    <div class="card-content">
+    <div class="p-6 mt-2 profile-info-block">
         <figure class="image is-128x128">
-            <img src="{{ tuser.userprofile.avatar_image }}" alt="User Avatar" class="is-rounded">
+            <img src="{{ tuser.userprofile.avatar_image }}" alt="User Avatar" class="has-background-black p-1 is-rounded">
         </figure>
         <br>
         <h1 class="title">{{ tuser.get_username }}</h1>
@@ -36,7 +34,12 @@
         <br>
         {% endif %}
         <div class="content my-3">
-            {{ tuser.userprofile.bio | user_mention | convert_markdown | safe }}
+            {% autoescape off %}
+            {{ tuser.userprofile.bio | convert_markdown | user_mention }}
+            {% endautoescape %}
         </div>
+        {% if user.is_staff %}
+        <a href="{% url 'admin:auth_user_change' tuser.id %}" hx-boost="false">&#9999; Staff Edit</a>
+        {% endif %}
     </div>
 </div>

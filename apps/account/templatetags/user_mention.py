@@ -8,17 +8,17 @@ register = template.Library()
 
 @register.filter
 def user_mention(value):
-    mention_pattern = r"@(\w+)"
+    return re.sub(r"@(\w+)", replace_mention, value)
 
-    def replace_mention(match):
-        username = match.group(1)
-        user = User.objects.filter(username=username).first()
-        if user:
-            profile_url = reverse("account:user_detail", args=[username])
-            mention_link = (
-                f'<a href="{profile_url}" class="user-mention" title="{username}">@{username}</a>'
-            )
-            return mention_link
-        return match.group(0)
 
-    return re.sub(mention_pattern, replace_mention, value)
+def replace_mention(match):
+    username = match.group(1)
+    if user := User.objects.filter(username=username).first():
+        profile_url = reverse("account:user_detail", args=[username])
+        return f"""<a href="{profile_url}" class="user-mention tag is-dark" title="{username}">
+            <span class="icon">
+                <img src="{user.userprofile.avatar_image()}" class="user-mention-image" alt="{username}'s Avatar" lazy>
+            </span>
+            <span class="is-link">@{username}</span>
+        </a>"""
+    return match.group(0)

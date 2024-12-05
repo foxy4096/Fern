@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+{{ category }}
+{% endblock title %}
+{% block content %}
+
+
+{% if category.parent %}
+<h1 class="title is-3">
+    <a href="{% url 'forum:threads_by_category' category.parent.slug %}">
+
+        {{ category.parent.name }}
+    </a> &rightarrowtail;
+    {{category.name}}
+</h1>
+{% else %}
+<h1 class="title is-3">
+    {{ category }}
+</h1>
+<p class="subtitle">{{ category.description }}</p>
+{% endif %}
+{{category_filter_form }}
+<hr>
+{% for thread in threads %}
+{% include 'forum/islands/thread_list.html' %}
+{% endfor %}
+
+{% endblock content %}

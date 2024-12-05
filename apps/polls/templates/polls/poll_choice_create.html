@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+{% load bulma_tags %}
+
+{% block title %}
+Create Poll
+{% endblock title %}
+{% block content %}
+<h1 class="title is-2">Create Choice</h1>
+<p class="subtitle">
+    <a href="{% url 'polls:poll_edit' question.id %}">&LeftArrow; Back</a>
+</p>
+<form action="." method="POST">
+    {{ cform | bulma }}
+    {% csrf_token %}
+    <div class="field">
+        <div class="control">
+            <div class="buttons">
+                <button type="submit" class="button is-primary">Save</button>
+                <button class="button is-link" name="save_and_continue" value="true">Save and Add Another</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+{% endblock content %}

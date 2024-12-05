@@ -8,7 +8,7 @@
     <div class="column is-9">
         {% include 'forum/islands/thread_header.html' with thread=post.thread %}
         <p class="subtitle">
-            <a href="{% url 'forum:thread_detail' post.thread.id %}">&LeftArrow; Back</a>
+            <a href="{% url 'forum:thread_detail' post.thread.slug %}">&LeftArrow; Back</a>
         </p>
         {% include 'forum/islands/post_block.html' %}
     </div>

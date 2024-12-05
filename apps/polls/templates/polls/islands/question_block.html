@@ -1,16 +1,21 @@
 <div class="media box">
     <div class="media-content">
         <div class="content">
-            <p class="subtitle is-3">
-                {{ question.question_text }}
+            <p class="subtitle">
+                <a href="{% url 'polls:poll_detail' question.id %}">
+                    {{ question.question_text }}
+                </a>
             </p>
         </div>
     </div>
     <div class="media-right">
         <div class="buttons">
             {% if user == question.created_by %}
-            <a href="{% url 'polls:poll_detail' question.id %}" class="button is-info">Edit</a>
-            <a href="#" class="button is-danger">Delete</a>
+            <a href="{% url 'polls:poll_edit' question.id %}" class="button is-info is-small">Edit</a>
+            <form action="{% url 'polls:poll_delete' question.id %}" method="post">
+                {% csrf_token %}
+                <button class="button is-danger is-small">Delete</button>
+            </form>
             {% endif %}
         </div>
     </div>

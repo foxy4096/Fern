@@ -1,14 +1,21 @@
 from django.contrib import admin
 from django.db import models
 from .models import Category, Post, Thread
+from .forms import CategoryCreationForm
 from apps.core.widgets import MarkdownWidget
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ["name"]
+    search_fields = ["name", "slug"]
     list_per_page = 10
     ordering = ["name"]
+    list_display = ["name", "slug", "color"]
+    list_display_links = ["slug"]
+    list_editable = ["name", "color"]
+    prepopulated_fields = {"slug": ("name",)}
+    autocomplete_fields = ['parent']
+    form = CategoryCreationForm
 
 
 @admin.register(Thread)
@@ -19,12 +26,12 @@ class ThreadAdmin(admin.ModelAdmin):
     search_fields = ["catrgory", "creator__username", "title"]
     actions = ["lock_thread", "unlock_thread"]
     autocomplete_fields = ["creator", "category"]
+    prepopulated_fields = {"slug": ("title",)}
 
     @admin.action(description="Lock selected threads")
     def lock_thread(self, request, queryset):
         queryset.update(is_locked=True)
         self.message_user(request, "Selected threads are locked")
-
 
     @admin.action(description="Unlock selected threads")
     def unlock_thread(self, request, queryset):

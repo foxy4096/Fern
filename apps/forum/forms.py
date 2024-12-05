@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post, Thread
+from .models import Post, Thread, Category
 
 from apps.core.widgets import MarkdownWidget
 
@@ -22,7 +22,23 @@ class ThreadCreationForm(forms.ModelForm):
                     "_": "on keyup if value of me is empty then add .is-danger else remove .is-danger",
                 }
             ),
+            # "category": AutoCompleteWidget(lookup_url="/auto/some", lookup_fields=["title"]),
         }
+
+
+class CategoryCreationForm(forms.ModelForm):
+    parent = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=True), required=False
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryCreationForm, self).__init__(*args, **kwargs)
+        self.fields["parent"].queryset = Category.objects.filter(parent__isnull=True)
+
+    class Meta:
+        model = Category
+        fields = ["name", "description", "parent", "slug", "color"]
+        
 
 
 class PostCreationForm(forms.ModelForm):
@@ -51,3 +67,27 @@ class ReplyCreationForm(forms.ModelForm):
         widgets = {
             "body": MarkdownWidget(),
         }
+
+
+class CategoryFilterForm(forms.Form):
+    category = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=True),
+        to_field_name="slug",
+        widget=forms.Select(attrs={
+            "onchange": "window.location = '/forum/c/' + document.querySelector('#id_category').value + '/';",
+        })
+    )
+    subcategory = forms.ModelChoiceField(
+        queryset=Category.objects.filter(parent__isnull=False),
+        to_field_name="slug",
+        widget=forms.Select(attrs={
+            "onchange": "window.location = '/forum/c/' + document.querySelector('#id_subcategory').value + '/';",
+        })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super(CategoryFilterForm, self).__init__(*args, **kwargs)
+        # Get the subcategory by the parent category children
+        category = kwargs.get("initial", {}).get("category", None)
+        self.fields["subcategory"].queryset = Category.objects.filter(parent=category)
+
