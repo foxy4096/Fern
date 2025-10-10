@@ -1,8 +1,12 @@
 {% load static %}
-<nav class="navbar fern-nav mx-6 my-4 p-2" role="navigation" aria-label="main navigation">
+<nav class="navbar fern-nav mx-6 my-4 p-2 {{NAVBAR_CLASS}}" style="{{NAVBAR_STYLE}}" role="navigation"
+    aria-label="main navigation">
     <div class="navbar-brand">
         <a class="navbar-item" href="{% url 'core:frontpage' %}">
-            <img src="{{ LOGO_PATH }}" width="30" alt="Logo" title="Fern 🌱">
+            <span class="icon mr-2">
+                <img src="{{ LOGO_PATH }}" width="30" alt="Logo" title="Fern 🌱">
+            </span>
+            <span class="is-hidden-touch"><strong>{{ site_title }}</strong></span>
         </a>
 
         <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" _="on click toggle .is-active on .navbar-menu
@@ -23,82 +27,53 @@
             </a>
             {% endfor %}
 
-            {% if ALLOW_DOC_LINKS %}
-            <a class="navbar-item">
-                Documentation
-            </a>
-            {% endif %}
-            <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                    <span>More</span><span class="icon">📦</span>
-                </a>
-
-                <div class="navbar-dropdown">
-                    <a class="navbar-item">
-                        About
-                    </a>
-                    <a class="navbar-item">
-                        Jobs
-                    </a>
-                    <a class="navbar-item">
-                        Contact
-                    </a>
-                    <hr class="navbar-divider">
-                    <a class="navbar-item">
-                        Report an issue
-                    </a>
-                </div>
-            </div>
         </div>
+    </div>
 
-        <div class="navbar-end">
-            <div class="navbar-item">
-                <div class="buttons">
-                    {% if user.is_authenticated %}
-                    <div class="dropdown is-hoverable is-right" style="padding-right: 10px;">
-                        <div class="dropdown-trigger">
-                            <a class="button is-ghost" href="{% url 'account:user_detail' user.username %}"
-                                aria-haspopup="true" aria-controls="dropdown-menu4">
-                                <article class="image is-36x36">
-                                    <img src="{{ user.userprofile.avatar_image }}" alt="{{ user.username }}'s Avatar"
-                                        class="{{ user.profile.status }} is-rounded" width="100" height="100">
-                                </article>
-                            </a>
-                        </div>
-                        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-                            <div class="dropdown-content">
-                                <div class="dropdown-item">
-                                    <a href="{% url 'account:user_detail' user.username %}">Your Profile</a>
-                                </div>
-                                <div class="dropdown-item">
-                                    <a href="{% url 'notification:notification_page' %}">Notifications
-                                        ({{ notification_count }})</a>
-                                </div>
-                                <div class="dropdown-item">
-                                    <p>Notifications</p>
-                                </div>
-                                <div class="dropdown-item">
-                                    <p>Notifications</p>
-                                </div>
+    <div class="navbar-end">
+        <div class="navbar-item">
+            <div class="buttons">
+                <!-- search button -->
+                <a href="{% url 'core:search' %}" class="button"><span class="icon"><i class="bi bi-search"></i></span><span>Search</span></a>
+                {% if user.is_authenticated %}
+                <div class="dropdown is-hoverable is-right" style="padding-right: 10px;">
+                    <div class="dropdown-trigger">
+                        <a class="button is-ghost" href="{% url 'account:user_detail' user.username %}"
+                            aria-haspopup="true" aria-controls="dropdown-menu4">
+                            <article class="image is-36x36">
+                                <img src="{{ user.userprofile.avatar_image }}" alt="{{ user.username }}'s Avatar"
+                                    class="{{ user.profile.status }} is-rounded" width="100" height="100">
+                            </article>
+                        </a>
+                    </div>
+                    <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+                        <div class="dropdown-content">
+                            <div class="dropdown-item">
+                                <a href="{% url 'account:user_detail' user.username %}">Your Profile</a>
+                            </div>
+                            <div class="dropdown-item">
+                                <a href="{% url 'notification:notification_page' %}">Notifications
+                                    ({{ notification_count }})</a>
                             </div>
                         </div>
                     </div>
-                    <a class="button is-danger shadow" href="{% url 'account:logout' %}">
-                        Log out
-                    </a>
-                    {% else %}
-                    <a class="button is-white special-dark" href="{% url 'account:signup' %}">
-                        <strong>Sign up</strong>
-                    </a>
-                    <a class="button" href="{% url 'account:login' %}">
-                        <span class="icon"><i class="bi bi-joystick"></i></span>
-                        <span>
-                            Log in
-                        </span>
-                    </a>
-                    {% endif %}
                 </div>
+                <a class="button is-danger shadow" href="{% url 'account:logout' %}">
+                    Log out
+                </a>
+                {% else %}
+                <a class="button is-white special-dark" href="{% url 'account:signup' %}">
+                    <strong>Sign up</strong>
+                </a>
+                <a class="button" href="{% url 'account:login' %}">
+                    <span class="icon"><i class="bi bi-joystick"></i></span>
+                    <span>
+                        Log in
+                    </span>
+                </a>
+                {% endif %}
             </div>
         </div>
+    </div>
     </div>
 </nav>

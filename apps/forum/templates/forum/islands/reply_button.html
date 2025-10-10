@@ -3,7 +3,7 @@
     href="{% url 'forum:reply_create' post.id %}" 
     hx-get="{% url 'forum:reply_form' post.id %}"
     hx-target="#reply-button-{{ post.id }}"
-    hx-swpa="outerHTML"
+    hx-swap="outerHTML"
     class="button is-ghost">
         <span class="icon">
             <i class="bi bi-reply-fill"></i>

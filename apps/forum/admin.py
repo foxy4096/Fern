@@ -10,9 +10,9 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["name", "slug"]
     list_per_page = 10
     ordering = ["name"]
-    list_display = ["name", "slug", "color"]
+    list_display = ["name", "slug", "color", "parent"]
     list_display_links = ["slug"]
-    list_editable = ["name", "color"]
+    list_editable = ["name", "color", "parent"]
     prepopulated_fields = {"slug": ("name",)}
     autocomplete_fields = ['parent']
     form = CategoryCreationForm

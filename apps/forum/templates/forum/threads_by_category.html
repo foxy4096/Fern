@@ -1,32 +1,40 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load convert_markdown %}
-{% load bulma_tags %}
 
 {% block title %}
 {{ category }}
 {% endblock title %}
 {% block content %}
 
+<p class="subtitle">
+    <div class="buttons">
 
-{% if category.parent %}
-<h1 class="title is-3">
-    <a href="{% url 'forum:threads_by_category' category.parent.slug %}">
+        <a href="{% url 'forum:categories_list' %}">&LeftArrow; Back to Categories</a>
+        <a href="{% url 'forum:thread_create' category.slug %}" class="button is-primary is-outlined">Create Thread</a>
+    </div>
+</p>
+<h3 class="title is-3">
+{% for parent in category.get_ancestors %}
+    <a href="{{ parent.get_absolute_url }}">{{ parent.name }}</a> /
+    {% endfor %}
+    <strong>{{ category.name }}</strong>
+</h3>
 
-        {{ category.parent.name }}
-    </a> &rightarrowtail;
-    {{category.name}}
-</h1>
-{% else %}
-<h1 class="title is-3">
-    {{ category }}
-</h1>
 <p class="subtitle">{{ category.description }}</p>
-{% endif %}
-{{category_filter_form }}
+
+
+<div id="category-filter-container" hx-get="{% url 'forum:category_filter' %}?slug={{ category.slug }}"
+    hx-trigger="load" hx-swap="innerHTML">
+    <progress class="progress is-small is-info" max="100">Loading…</progress>
+</div>
+
+
 <hr>
 {% for thread in threads %}
 {% include 'forum/islands/thread_list.html' %}
+{% empty %}
+<p class="subtitle">No threads in this category yet.</p>
 {% endfor %}
 
 {% endblock content %}

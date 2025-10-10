@@ -21,11 +21,7 @@ class UserProfile(models.Model):
         blank=True,
         help_text=_("Tell us about yourself. (Markdown and BBCode Supported)"),
     )
-    dark_mode = models.BooleanField(
-        verbose_name=_("Dark Mode"),
-        default=False,
-        help_text=_("Enable dark mode for the website"),
-    )
+
     avatar = ResizedImageField(
         verbose_name=_("Profile Picture"),
         default="default/avatar.png",
@@ -78,24 +74,3 @@ class UserProfile(models.Model):
         Returns the avatar image url or Gravatar image url
         """
         return get_gravatar(self.user.email) if self.use_gravtar else self.avatar.url
-
-
-class UserPreference(models.Model):
-    user = models.OneToOneField(
-        verbose_name=_("user"), to=User, on_delete=models.CASCADE
-    )
-    email_notifications = models.BooleanField(default=True)
-    email_notifications_frequency = models.CharField(
-        verbose_name=_("Email Notifications Frequency"),
-        max_length=20,
-        choices=[
-            ("Daily", "Daily"),
-            ("Weekly", "Weekly"),
-            ("Monthly", "Monthly"),
-        ],
-        default="Daily",
-        help_text=_("How often do you want to receive email notifications?"),
-    )
-
-    def __str__(self):
-        return f"{self.user.get_username()}'s Preference"

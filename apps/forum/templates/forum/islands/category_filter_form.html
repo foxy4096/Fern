@@ -1,0 +1,26 @@
+<div class="field">
+    <label class="label">Choose Subcategory</label>
+    <div class="control">
+        <div class="select">
+            <select
+                name="subcategory"
+                hx-get="{% url 'forum:category_filter' %}"
+                hx-target="#category-filter-container"
+                hx-swap="innerHTML"
+                onchange="if (this.value) window.location.href = '/forum/c/' + this.value + '/'">
+                <option value="">-- Select --</option>
+                {% for sub in subcategories %}
+                <option value="{{ sub.slug }}">{{ sub.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<noscript>
+    <div class="mt-2">
+        <a class="button is-small is-link" href="{{ category.get_absolute_url }}">
+            Go to {{ category.name }}
+        </a>
+    </div>
+</noscript>

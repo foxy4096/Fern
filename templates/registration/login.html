@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load bulma_tags %}
 
 {% block title %}
 Login
@@ -10,7 +9,7 @@ Login
 {% block content %}
 <h1 class="title">Login</h1>
 <form method="post">
-    {{ form | bulma }}
+    {{ form }}
     {% csrf_token %}
     <button type="submit" class="button is-success">Login</button>
     <br>

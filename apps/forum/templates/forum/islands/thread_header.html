@@ -1,12 +1,16 @@
 {% load humanize %}
-<h2 class="title is-2">{{ thread.title }}</h2>
 <p class="subtitle">
     {% if user.is_staff %}
     <a href="{% url 'admin:forum_thread_change' thread.id %}" hx-boost="false">&#9999; Staff Edit</a>
     {% endif %}
 </p>
+<h2 class="title is-2">{{ thread.title }}</h2>
 
-<a href="{% url 'forum:threads_by_category' thread.category.slug %}" class="tag mb-5">
+{% for parent in thread.category.get_ancestors %}
+<a href="{{ parent.get_absolute_url }}"  class="tag mb-5 is-dark"
+    style="background-color: {{parent.color}};">{{ parent.name }}</a> /
+{% endfor %}
+<a href="{% url 'forum:threads_by_category' thread.category.slug %}" class="tag mb-5 is-dark"
+    style="background-color: {{thread.category.color}};">
     {{ thread.category }}
 </a>
-<hr>

@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.shortcuts import get_object_or_404, redirect, render
 
 from apps.forum.forms import (
     PostCreationForm,
     ReplyCreationForm,
     ThreadCreationForm,
     CategoryFilterForm,
+    UploadForm,
 )
 from apps.forum.models import Post, Thread, Category
 from .islands import thread_post_list
@@ -16,7 +17,7 @@ from apps.core.utils import is_htmx
 
 
 @login_required
-def thread_create(request):
+def thread_create(request, category_slug=None):
     """
     Create a new thread and handle form submissions.
 
@@ -26,7 +27,13 @@ def thread_create(request):
     Returns:
         HttpResponse: The rendered HTML response.
     """
-    tform = ThreadCreationForm(request.POST if request.method == "POST" else None)
+
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug)
+    else:
+        category = None
+
+    tform = ThreadCreationForm(request.POST if request.method == "POST" else None, initial={"category": category})
     pform = PostCreationForm(request.POST if request.method == "POST" else None)
 
     if request.method == "POST" and tform.is_valid() and pform.is_valid():
@@ -174,3 +181,36 @@ def like_post(request, pk):
     else:
         post.likes.add(request.user)
     return redirect("forum:thread_detail", slug=post.thread.slug)
+
+
+def categories_list(request):
+    """
+    Display a list of all categories.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered HTML response.
+    """
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    return render(request, "forum/categories_list.html", {"categories": categories})
+
+
+
+@login_required
+def upload_file(request):
+    if request.method == "POST":
+        form = UploadForm(request.POST, request.FILES, initial={"user": request.user})
+        if form.is_valid():
+            upload = form.save(commit=False)
+            upload.user = request.user
+            upload.full_clean()
+            upload.save()
+            messages.success(request, "File uploaded successfully.")
+            return redirect("forum:existing_uploads")
+        else:
+            messages.error(request, "There was an error uploading your file.")
+    else:
+        form = UploadForm()
+    return render(request, "forum/upload_file.html", {"form": form})

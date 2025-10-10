@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load convert_markdown %}
-{% load bulma_tags %}
+
 
 {% block title %}
 Create Poll
@@ -12,7 +12,7 @@ Create Poll
     <a href="{% url 'polls:poll_edit' question.id %}">&LeftArrow; Back</a>
 </p>
 <form action="." method="POST">
-    {{ cform | bulma }}
+    {{ cform }}
     {% csrf_token %}
     <div class="field">
         <div class="control">

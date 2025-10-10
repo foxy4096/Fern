@@ -1,3 +1,4 @@
+{% load humanize %}
 <div class="media">
     <div class="media-left">
         <a href="{% url 'account:user_detail' thread.creator.username %}">
@@ -7,10 +8,17 @@
         </a>
     </div>
     <div class="media-content">
-        <p class="subtitle">
+        <h4 class="title is-4">
             <a href="{% url 'forum:thread_detail' thread.slug %}">
                 {{ thread }}
             </a>
+        </h4>
+        <p class="subtitle is-6">
+            <a href="{% url 'account:user_detail' thread.creator.username %}">
+                @{{ thread.creator.username }}
+            </a>
+            <span class="has-text-grey-light">•</span>
+            <time datetime="{{ thread.created_at|date:'c' }}">{{ thread.created_at|naturaltime }}</time>
         </p>
     </div>
 </div>

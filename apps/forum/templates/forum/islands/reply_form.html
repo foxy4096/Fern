@@ -1,10 +1,10 @@
-{% load bulma_tags %}
+
 <form
   action="{% url 'forum:reply_create' post.pk %}"
   method="post"
   id="reply-form-{{ post.pk }}"
 >
-  {% csrf_token %} {{ reply_form | bulma }}
+  {% csrf_token %} {{ reply_form }}
   <div class="control">
     <button type="submit" class="button">Reply</button>
     {% if cancel_button|default:True == True %}    

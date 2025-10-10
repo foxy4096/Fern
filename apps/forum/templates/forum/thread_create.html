@@ -3,6 +3,7 @@
 {% load convert_markdown %}
 {% load bulma_tags %}
 
+
 {% block title %}
 Create Post
 {% endblock title %}
@@ -16,6 +17,7 @@ Create Post
         <div class="control">
             <div class="buttons">
                 <button class="button is-white">Save</button>
+                {% include 'forum/islands/upload_button.html' %}
             </div>
         </div>
 </form>

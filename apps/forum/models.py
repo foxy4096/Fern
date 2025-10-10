@@ -4,7 +4,8 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from colorfield.fields import ColorField
-
+from django.core.exceptions import ValidationError
+import os
 
 
 class Category(models.Model):
@@ -31,14 +32,53 @@ class Category(models.Model):
 
     def get_recent_3_threads(self):
         return self.threads.order_by("-created_at")[:3]
-    
+
     def get_absolute_url(self):
-        return reverse('forum:threads_by_category', kwargs={'slug': self.slug})
-    
+        return reverse("forum:threads_by_category", kwargs={"slug": self.slug})
+
+    @property
+    def is_leaf(self):
+        """
+        Check if the category is a leaf node (i.e., has no subcategories).
+        """
+        return not self.subcategories.exists()
+
+    @property
+    def is_root(self):
+        """
+        Check if the category is a root node (i.e., has no parent).
+        """
+        return self.parent is None
+
+    def get_ancestors(self):
+        """
+        Get all ancestors of the category.
+        Returns a list of categories from the root to this category.
+        """
+        ancestors = []
+        current = self
+        while current.parent:
+            ancestors.append(current.parent)
+            current = current.parent
+        return ancestors[::-1]
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = self.generate_unique_slug()
+        # Ensure the slug is unique
         super().save(*args, **kwargs)
+
+    def generate_unique_slug(self):
+        """
+        Generate a unique slug for the category.
+        """
+        base_slug = slugify(self.name)
+        unique_slug = base_slug
+        counter = 1
+        while Category.objects.filter(slug=unique_slug).exists():
+            unique_slug = f"{base_slug}-{counter}"
+            counter += 1
+        return unique_slug
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -78,6 +118,20 @@ class Thread(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def get_posts_count(self):
+        """
+        Get the count of posts in the thread.
+        """
+        return self.posts.count()
+
+    @property
+    def get_first_post(self):
+        """
+        Get the first post in the thread.
+        """
+        return self.posts.first()
 
     def get_absolute_url(self):
         return reverse("forum:thread_detail", kwargs={"slug": self.slug})
@@ -153,10 +207,12 @@ class Post(models.Model):
     class Meta:
         ordering = ["created_at"]
 
+
 class Link(models.Model):
     """
     Rich Reperesentation of a link.
     """
+
     title = models.CharField(max_length=255)
     url = models.URLField()
     clicks = models.IntegerField(default=0)
@@ -169,6 +225,52 @@ class Link(models.Model):
 
     def __str__(self):
         return self.title
-    
+
     class Meta:
         ordering = ["clicks"]
+
+
+class Upload(models.Model):
+    file = models.FileField(upload_to="forum/uploads/%Y/%m/%d/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(
+        User, related_name="forum_uploads", on_delete=models.CASCADE
+    )
+    description = models.CharField(max_length=255, blank=True, null=True)
+
+    def clean(self):
+        max_file_size = 5 * 1024 * 1024  # 5 MB
+        user_quota = 50 * 1024 * 1024  # 50 MB
+
+        # ✅ Step 1: Ensure we actually have a file before accessing .size
+        if not self.file or not hasattr(self.file, "size"):
+            return  # Skip checks if no file is present (e.g., editing description)
+
+        # ✅ Step 2: Check individual file size
+        if self.file.size > max_file_size:
+            raise ValidationError(_("Each file must be ≤ 5 MB."))
+
+        # ✅ Step 3: Calculate total used space for the user (safe iteration)
+        total_used = 0
+        for upload in Upload.objects.filter(user=self.user).exclude(pk=self.pk):
+            if upload.file and hasattr(upload.file, "size"):
+                try:
+                    total_used += upload.file.size
+                except FileNotFoundError:
+                    # In case a file was deleted manually from storage
+                    continue
+
+        # ✅ Step 4: Check quota
+        if total_used + self.file.size > user_quota:
+            remaining = max(0, user_quota - total_used)
+            raise ValidationError(
+                _(
+                    f"Upload quota exceeded. You can only upload {remaining / (1024*1024):.2f} MB more."
+                )
+            )
+
+    def __str__(self):
+        return f"{self.file.name if self.file else 'No file'} ({self.user.username})"
+
+    class Meta:
+        ordering = ["-uploaded_at"]

@@ -1,0 +1,36 @@
+{% load media_extras %}
+
+
+<div class="columns is-multiline">
+  {% for media in uploads %}
+  <div class="column is-one-quarter has-text-centered">
+    {% if media.file.name|is_image %}
+    <img src="{{ media.file.url }}" alt="{{ media.file.name }}" style="max-width:100%;">
+    {% else %}
+    <span class="icon"><i class="fas fa-file"></i></span>
+    <p>{{ media.file.name }}</p>
+    {% endif %}
+    <button class="button is-small mt-2 insert-upload-btn" hx-get="{% url 'forum:insert_upload' media.id %}"
+      hx-trigger="click" hx-swap="none">
+      Insert
+    </button>
+  </div>
+  {% endfor %}
+</div>
+<script>
+  document.body.addEventListener('htmx:afterRequest', function (evt) {
+    const btn = evt.target;
+    if (btn.classList.contains('insert-upload-btn')) {
+      const ta = btn.closest('form')?.querySelector('textarea') || document.querySelector('textarea');
+      if (ta) {
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        const text = ta.value;
+        ta.value = text.substring(0, start) + evt.detail.xhr.responseText + text.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + evt.detail.xhr.responseText.length;
+        ta.focus();
+        console.log('Inserted upload markdown at cursor');
+      }
+    }
+  });
+</script>

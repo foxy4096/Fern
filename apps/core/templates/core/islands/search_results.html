@@ -1,0 +1,22 @@
+{% if type_filter == "threads" %}
+{% for thread in results %}
+<div class="box">
+
+    {% include 'forum/islands/thread_list.html' %}
+</div>
+{% endfor %}
+{% elif type_filter == "posts" %}
+{% for post in results %}
+<div class="box">
+{% include 'forum/islands/post_display.html' %}
+</div>
+{% endfor %}
+{% elif type_filter == "users" %}
+{% for user in results %}
+<div class="box">
+    {% include 'account/islands/users_list.html' with users=results %}
+</div>
+{% endfor %}
+{% elif type_filter == "categories" %}
+Categories
+{% endif %}
