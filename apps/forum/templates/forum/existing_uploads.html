@@ -33,9 +33,16 @@ Your Uploads - {{ user.get_username }}
 </div>
 
 <h4 class="title is-4">Your Uploads</h4>
+
+{% if SITE_CONFIG.ALLOW_UPLOADS %}
+    
+
 <div class="field">
     <a href="{% url 'forum:upload_file' %}" class="button">Upload</a>
 </div>
+{% else %}
+<p class="has-text-danger">File uploads are currently disabled.</p>
+{% endif %}
 <div class="block">
     <p class="has-text-weight-bold">Upload Quota:</p>
     <progress class="progress is-light is-large" value="{{ total_used_mb }}" max="{{ quota_mb }}">
