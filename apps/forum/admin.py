@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db import models
-from .models import Category, Post, Thread
+from .models import Category, Post, Thread, Link
 from .forms import CategoryCreationForm
 from apps.core.widgets import MarkdownWidget
 
@@ -55,3 +55,17 @@ class PostAdmin(admin.ModelAdmin):
     def make_publish(self, request, queryset):
         queryset.update(status="Published")
         self.message_user(request, "Selected posts are marked as published")
+
+
+@admin.register(Link)
+class LinkAdmin(admin.ModelAdmin):
+    list_display = ["url", "title", "post"]
+    search_fields = ["url", "title", "post__body"]
+    autocomplete_fields = ["post"]
+    actions = ["fetch_metadata_for_links"]
+
+    @admin.action(description="Fetch metadata for selected links")
+    def fetch_metadata_for_links(self, request, queryset):
+        for link in queryset:
+            link.fetch_metadata()
+        self.message_user(request, "Metadata fetched for selected links")

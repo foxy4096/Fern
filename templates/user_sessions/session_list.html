@@ -21,8 +21,10 @@ Your Sessions
 <div class="tabs is-centered is-fullwidth">
   <ul>
     <li><a href="{% url 'account:user_detail' user.username %}"><span class="icon"><i class="bi bi-person-fill"></i></span><span></span>Summary</span></a></li>
-    <li class="is-active"><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i class="bi bi-broadcast-pin"></i></span><span>Summary</span></a></li>
-    <li><a href="{% url 'account:user_preference' user.username %}"><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Summary</span></a></li>
+    <li class="is-active"><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i class="bi bi-broadcast-pin"></i></span><span>Activity</span></a></li>
+        <li><a href="{% url 'forum:existing_uploads' %}"><span class="icon"><i class="bi bi-archive-fill"></i></span><span>Your Uploads</span></a></li>
+
+    <li><a href="{% url 'account:user_preference' user.username %}"><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Preferences</span></a></li>
   </ul>
 </div>
 

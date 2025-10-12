@@ -3,7 +3,9 @@ async-timeout==4.0.3
 attrs==23.1.0
 autobahn==23.6.2
 Automat==22.10.0
+beautifulsoup4==4.14.2
 bleach==6.0.0
+bs4==0.0.2
 certifi==2023.7.22
 cffi==1.16.0
 channels==4.0.0
@@ -50,6 +52,7 @@ redis==5.0.0
 requests==2.31.0
 service-identity==23.1.0
 six==1.16.0
+soupsieve==2.8
 sqlparse==0.4.4
 tomli==2.0.1
 Twisted==23.10.0

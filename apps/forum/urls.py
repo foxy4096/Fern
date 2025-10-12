@@ -27,8 +27,14 @@ urlpatterns = [
     path("upload/", views.upload_file, name="upload_file"),  # New upload path
     path('islands/upload-modal/', islands.upload_modal, name='upload_modal'),
     path('islands/upload-form/', islands.upload_form, name='upload_form'),
-    path('islands/existing-uploads/', islands.existing_uploads, name='existing_uploads'),
+    path('islands/existing-uploads/', islands.existing_uploads, name='existing_uploads_island'),
     path('islands/close-modal/', islands.close_modal, name='close_modal'),
     path('islands/insert-upload/<int:pk>/', islands.insert_upload, name='insert_upload'),
+
+    path("uploads/", views.existing_uploads, name="existing_uploads"),  # New existing uploads path
+    path("uploads/<int:pk>/delete/", views.delete_upload, name="delete_upload"),
+
+    path('link/<int:pk>/click/', views.link_click, name='link_click')
+
 
 ]

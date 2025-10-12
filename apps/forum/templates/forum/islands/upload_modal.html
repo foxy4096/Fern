@@ -1,33 +1,51 @@
 <div class="modal is-active" id="upload-modal">
-  <div class="modal-background" hx-get="{% url 'forum:close_modal' %}" hx-target="#modal-container"></div>
-  <div class="modal-card">
-    <header class="modal-card-head">
+  <div class="modal-background" 
+       hx-get="{% url 'forum:close_modal' %}" 
+       hx-target="#modal-container"></div>
+
+  <div class="modal-card" 
+       style="width: 55vw; height: 90vh; max-height: 90vh; display: flex; flex-direction: column;">
+
+    <header class="modal-card-head" style="box-shadow: none;">
       <p class="modal-card-title">Manage Media</p>
       <button class="delete" aria-label="close"
               hx-get="{% url 'forum:close_modal' %}" 
               hx-target="#modal-container"></button>
     </header>
 
-    <section class="modal-card-body">
-      <div class="tabs is-boxed">
+    <section class="modal-card-body" style="flex: 1; overflow-y: auto;">
+      <div class="tabs is-fullwidth">
         <ul>
-          <li class="is-active" id="tab-upload"><a hx-get="{% url 'forum:upload_form' %}" hx-target="#tab-content" hx-swap="innerHTML">Upload</a></li>
-          <li id="tab-existing"><a hx-get="{% url 'forum:existing_uploads' %}" hx-target="#tab-content" hx-swap="innerHTML">My Files</a></li>
+          <li class="is-active" id="tab-upload">
+            <a hx-get="{% url 'forum:upload_form' %}" 
+               hx-target="#tab-content" 
+               hx-swap="innerHTML">
+               Upload
+            </a>
+          </li>
+          <li id="tab-existing">
+            <a hx-get="{% url 'forum:existing_uploads_island' %}" 
+               hx-target="#tab-content" 
+               hx-swap="innerHTML">
+               My Files
+            </a>
+          </li>
         </ul>
       </div>
 
-      <div id="tab-content">
+      <div id="tab-content" style="padding: 1rem;">
         {% include "forum/islands/upload_form.html" %}
       </div>
     </section>
+
   </div>
 </div>
+
 <script>
 document.addEventListener('click', function (e) {
   const tab = e.target.closest('.tabs ul li');
   if (!tab) return;
 
-  // Remove 'is-active' from all tabs in this group
   tab.parentElement.querySelectorAll('li').forEach(li => li.classList.remove('is-active'));
   tab.classList.add('is-active');
 });

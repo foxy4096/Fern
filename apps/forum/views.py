@@ -1,6 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+
 
 from apps.forum.forms import (
     PostCreationForm,
@@ -9,7 +12,7 @@ from apps.forum.forms import (
     CategoryFilterForm,
     UploadForm,
 )
-from apps.forum.models import Post, Thread, Category
+from apps.forum.models import Post, Thread, Category, Upload, Link
 from .islands import thread_post_list
 from apps.core.utils import paginate
 
@@ -208,9 +211,57 @@ def upload_file(request):
             upload.full_clean()
             upload.save()
             messages.success(request, "File uploaded successfully.")
+            if is_htmx(request):
+                return redirect("forum:existing_uploads_island")
             return redirect("forum:existing_uploads")
         else:
             messages.error(request, "There was an error uploading your file.")
     else:
         form = UploadForm()
     return render(request, "forum/upload_file.html", {"form": form})
+
+
+
+@login_required
+def existing_uploads(request):
+    uploads = Upload.objects.filter(user=request.user).order_by('-uploaded_at')
+    total_used_bytes = sum(upload.file.size for upload in uploads if upload.file)
+    total_used_mb = round(total_used_bytes / (1024 * 1024), 2)
+    quota_mb = 50
+
+    # Prepare human-readable sizes for each upload
+    for u in uploads:
+        size = u.file.size
+        if size < 1024:
+            u.human_size = f"{size} B"
+        elif size < 1024*1024:
+            u.human_size = f"{size/1024:.2f} KB"
+        else:
+            u.human_size = f"{size/(1024*1024):.2f} MB"
+    
+    context = {
+        'uploads': uploads,
+        'total_used_mb': total_used_mb,
+        'quota_mb': quota_mb,
+    }
+    return render(request, "forum/existing_uploads.html", context)
+
+
+@login_required
+def delete_upload(request, pk):
+    upload = get_object_or_404(Upload, pk=pk, user=request.user)
+    if request.method == "POST":
+        upload.delete()
+        messages.success(request, "Upload deleted successfully.")
+        return redirect("forum:existing_uploads")
+    return render(request, "forum/confirm_delete_upload.html", {"upload": upload})
+
+
+@csrf_exempt
+def link_click(request, pk):
+    if request.method == "POST":
+        link = Link.objects.get(pk=pk)
+        link.clicks += 1
+        link.save()
+        return JsonResponse({"success": True, "clicks": link.clicks})
+    return JsonResponse({"success": False})

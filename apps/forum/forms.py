@@ -58,7 +58,7 @@ class PostCreationForm(forms.ModelForm):
 
     class Meta:
         model = Post
-        fields = ["body", "status"]
+        fields = ["body",]
         widgets = {
             "body": MarkdownWidget(),
         }

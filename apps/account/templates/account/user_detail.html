@@ -25,10 +25,11 @@ Summary - {{ tuser.get_username }}
     <ul>
         <li class="is-active"><a><span class="icon"><i class="bi bi-person-fill"></i></span><span>Summary</span></a></li>
         {% if tuser == user %}
-        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i class="bi bi-broadcast-pin"></i></span><span>Summary</span></a></li>
+        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i class="bi bi-broadcast-pin"></i></span><span>Activity</span></a></li>
        
-        
-        <li><a href="{% url 'account:user_preference' tuser.username %}"><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Summary</span></a></li>
+        <li><a href="{% url 'forum:existing_uploads' %}"><span class="icon"><i class="bi bi-archive-fill"></i></span><span>Your Uploads</span></a></li>
+
+        <li><a href="{% url 'account:user_preference' tuser.username %}"><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Preferences</span></a></li>
         {% endif %}
     </ul>
 </div>

@@ -26,13 +26,18 @@ Preference - {{ tuser.get_username }}
 </div>
 <div class="tabs is-centered is-fullwidth">
     <ul>
-        <li><a href="{% url 'account:user_detail' tuser.username %}"><span class="icon"><i class="bi bi-person-fill"></i></span><span>Summary</span></a></li>
-        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i class="bi bi-broadcast-pin"></i></span><span>Summary</span></a></li>
-        
+        <li><a href="{% url 'account:user_detail' tuser.username %}"><span class="icon"><i
+                        class="bi bi-person-fill"></i></span><span>Summary</span></a></li>
+        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i
+                        class="bi bi-broadcast-pin"></i></span><span>Activity</span></a></li>
+        <li><a href="{% url 'forum:existing_uploads' %}"><span class="icon"><i
+                        class="bi bi-archive-fill"></i></span><span>Your Uploads</span></a></li>
+
         {% if tuser == user %}
-       
-        
-        <li class="is-active"><a><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Summary</span></a></li>
+
+
+        <li class="is-active"><a><span class="icon"><i
+                        class="bi bi-gear-wide-connected"></i></span><span>Preferences</span></a></li>
         {% endif %}
     </ul>
 </div>
@@ -45,10 +50,13 @@ Preference - {{ tuser.get_username }}
 </p>
 <br>
 <form action="." method="post" enctype="multipart/form-data">
+
     {% csrf_token %}
     <h4 class="title is-4">General Info</h4>
-    {{ uform | bulma }}
-    {{ pform | bulma }}
+    <div class="column is-half">
+        {{ uform | bulma }}
+        {{ pform | bulma }}
+    </div>
     <h4 class="title is-4">Profile Picture</h4>
     <figure class="image is-64x64 block">
         <img src="{{ tuser.userprofile.avatar_image }}" alt="User Profile Picture" loading="lazy" class="is-rounded">

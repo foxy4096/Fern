@@ -214,8 +214,11 @@ class Link(models.Model):
     """
 
     title = models.CharField(max_length=255)
+    description = models.TextField()
+    og_image = models.URLField(blank=True, null=True)
     url = models.URLField()
     clicks = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
     post = models.ForeignKey(
         verbose_name=_("Post"),
         to=Post,
@@ -227,8 +230,35 @@ class Link(models.Model):
         return self.title
 
     class Meta:
-        ordering = ["clicks"]
+        ordering = ["-created_at"]
 
+    def fetch_metadata(self):
+        import requests
+        from bs4 import BeautifulSoup
+
+        try:
+            response = requests.get(self.url, timeout=5)
+            response.raise_for_status()
+            soup = BeautifulSoup(response.text, "html.parser")
+
+            self.title = (soup.title.string or self.url)[:255]
+            og_desc = soup.find("meta", property="og:description")
+            self.description = (
+                og_desc["content"] if og_desc and "content" in og_desc.attrs else ""
+            )[:500]
+            og_image = soup.find("meta", property="og:image")
+            # No truncation for image URL
+            self.og_image = (
+                og_image["content"] if og_image and "content" in og_image.attrs else ""
+            )
+            self.save()
+        except Exception as e:
+            # Log the error or handle it as needed
+            print(f"Error fetching metadata for {self.url}: {e}")
+            self.title = self.url
+            self.description = ""
+            self.og_image = ""
+            self.save()
 
 class Upload(models.Model):
     file = models.FileField(upload_to="forum/uploads/%Y/%m/%d/")
@@ -268,6 +298,12 @@ class Upload(models.Model):
                     f"Upload quota exceeded. You can only upload {remaining / (1024*1024):.2f} MB more."
                 )
             )
+        
+    @property
+    def file_size(self):
+        if self.file and hasattr(self.file, 'size'):
+            return self.file.size
+        return 0
 
     def __str__(self):
         return f"{self.file.name if self.file else 'No file'} ({self.user.username})"

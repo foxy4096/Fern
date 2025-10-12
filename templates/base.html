@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="{% static 'css/main.css' %}?v={{ random|default_if_none:0 }}">
     <link rel="stylesheet" href="{% static 'css/srcery.min.css' %}">
     <script src="{% static 'js/highlight.min.js' %}"></script>
+    <script src="{% static 'js/fern.js' %}"></script>
     <script>hljs.highlightAll();</script>
     <title>
         {% block title %}
@@ -40,6 +41,8 @@
             
         </div>
     </section>
+    <div id="toast-container" style="position: fixed; top: 1rem; right: 1rem; z-index: 9999;"></div>
+
     {% include 'islands/loader.html' %}
     <script>
         htmx.on("htmx:load", function (evt) {

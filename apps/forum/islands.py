@@ -95,12 +95,14 @@ def upload_form(request):
 @login_required
 def existing_uploads(request):
     uploads = Upload.objects.filter(user=request.user).order_by("-uploaded_at")
-    if is_hx_paginated(request):
-        uploads = paginate(request, uploads)
-        return render(
-            request, "forum/islands/existing_uploads_list.html", {"uploads": uploads}
-        )
-    return render(request, "forum/islands/existing_uploads.html", {"uploads": uploads})
+    total_used_bytes = sum(upload.file.size for upload in uploads if upload.file)
+    total_used_mb = round(total_used_bytes / (1024 * 1024), 2)
+    quota_mb = 50
+    return render(
+        request,
+        "forum/islands/existing_uploads.html",
+        {"uploads": uploads, "total_used_mb": total_used_mb, "quota_mb": quota_mb},
+    )
 
 
 def close_modal(request):
