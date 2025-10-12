@@ -5,16 +5,43 @@
 Notifications
 {% endblock title %}
 
-
 {% block content %}
-<h1 class="title">Notifications</h1>
-{% for notification in notifications %}
-<div class="notification">
-    <div class="content">
-        <p><strong>{{ notification.sender.username }}</strong> {{ notification.verb }}</p>
-        <p class="is-size-7">{{ notification.created_at | naturaltime }}</p>
-        <a href="{{ notification.content_object.get_absolute_url }}">View</a>
-    </div>
-</div>
-{% endfor %}
+<section class="section">
+    <h1 class="title">Notifications</h1>
+
+    {% if notifications %}
+        <div class="notification-list">
+            {% for notification in notifications %}
+            <div class="box px-3 py-3 {% if not notification.is_read %}has-background-dark{% endif %}">
+                <div class="media">
+                    <div class="media-left">
+                        <figure class="image is-48x48">
+                            <img class="is-rounded" src="{{ notification.sender.userprofile.avatar_image }}" alt="{{ notification.sender.username }}">
+                        </figure>
+                    </div>
+                    <div class="media-content">
+                        <p class="{% if not notification.is_read %}has-text-weight-bold{% endif %}">
+                            <strong>{{ notification.sender.username }}</strong> {{ notification.verb }}
+                        </p>
+                        <p class="is-size-7 has-text-grey">
+                            {{ notification.created_at | naturaltime }}
+                        </p>
+                    </div>
+                    <div class="media-right">
+                        {% if notification.content_object %}
+                        <a href="{% url 'notification:redirect_to_notification_target' notification.pk %}" class="button is-small is-link">
+                            View
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% include 'core/islands/pagination_buttons.html' with page=notifications %}
+    {% else %}
+        <p class="has-text-grey">You have no notifications.</p>
+    {% endif %}
+</section>
 {% endblock content %}

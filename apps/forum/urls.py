@@ -11,6 +11,7 @@ urlpatterns = [
     # Post edit
     path("<int:pk>/edit/", views.post_edit, name="post_edit"),
     path("<int:pk>/reply/", views.reply_create, name="reply_create"),
+    path("<int:pk>/delete/", views.delete_post, name="delete_post"),
 
     path('c/<str:slug>/', views.threads_by_category, name='threads_by_category'),
     path('c/', views.categories_list, name='categories_list'),

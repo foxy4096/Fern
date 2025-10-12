@@ -39,7 +39,7 @@
             </figure>
         </div>
         <div class="media-content">
-            {% include 'account/islands/user_dropdown.html' with with_name=True with_image=False %}
+            {% include 'account/islands/user_dropdown.html' %}
             <br>
         </div>
         <div class="media-right tags">
@@ -49,7 +49,7 @@
             {% if post.author == user %}
             <a class="tag is-link" href="{% url 'forum:post_edit' post.id %}" hx-swap="innerHTML"
                 hx-get="{% url 'forum:post_edit' post.id %}" hx-target="#post-{{ post.id }}">Edit</a>
-            <div class="tag is-danger">Delete</div>
+            <a href="{% url 'forum:delete_post' post.id %}" class="tag is-danger">Delete</a>
             {% endif %}
         </div>
     </div>

@@ -113,8 +113,22 @@ class Thread(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.title)
+            self.slug = self.generate_unique_slug()
+        # Ensure the slug is unique
         super().save(*args, **kwargs)
+
+
+    def generate_unique_slug(self):
+        """
+        Generate a unique slug for the thread.
+        """
+        base_slug = slugify(self.title)
+        unique_slug = base_slug
+        counter = 1
+        while Thread.objects.filter(slug=unique_slug).exists():
+            unique_slug = f"{base_slug}-{counter}"
+            counter += 1
+        return unique_slug
 
     def __str__(self):
         return self.title

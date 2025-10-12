@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.csrf import csrf_exempt
+from apps.notification.models import Notification
 
 
 from apps.forum.forms import (
@@ -36,7 +37,10 @@ def thread_create(request, category_slug=None):
     else:
         category = None
 
-    tform = ThreadCreationForm(request.POST if request.method == "POST" else None, initial={"category": category})
+    tform = ThreadCreationForm(
+        request.POST if request.method == "POST" else None,
+        initial={"category": category},
+    )
     pform = PostCreationForm(request.POST if request.method == "POST" else None)
 
     if request.method == "POST" and tform.is_valid() and pform.is_valid():
@@ -172,7 +176,11 @@ def threads_by_category(request, slug=""):
     return render(
         request,
         "forum/threads_by_category.html",
-        {"threads": threads, "category": category, "category_filter_form": category_filter_form},
+        {
+            "threads": threads,
+            "category": category,
+            "category_filter_form": category_filter_form,
+        },
     )
 
 
@@ -183,6 +191,13 @@ def like_post(request, pk):
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
+        if post.author != request.user:
+            Notification.objects.get_or_create(
+                sender=request.user,
+                receiver=post.author,
+                verb=f"{request.user.username} liked your post.",
+                content_object=post,
+            )
     return redirect("forum:thread_detail", slug=post.thread.slug)
 
 
@@ -196,9 +211,10 @@ def categories_list(request):
     Returns:
         HttpResponse: The rendered HTML response.
     """
-    categories = Category.objects.filter(parent__isnull=True).prefetch_related('subcategories')
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related(
+        "subcategories"
+    )
     return render(request, "forum/categories_list.html", {"categories": categories})
-
 
 
 @login_required
@@ -221,10 +237,9 @@ def upload_file(request):
     return render(request, "forum/upload_file.html", {"form": form})
 
 
-
 @login_required
 def existing_uploads(request):
-    uploads = Upload.objects.filter(user=request.user).order_by('-uploaded_at')
+    uploads = Upload.objects.filter(user=request.user).order_by("-uploaded_at")
     total_used_bytes = sum(upload.file.size for upload in uploads if upload.file)
     total_used_mb = round(total_used_bytes / (1024 * 1024), 2)
     quota_mb = 50
@@ -234,15 +249,15 @@ def existing_uploads(request):
         size = u.file.size
         if size < 1024:
             u.human_size = f"{size} B"
-        elif size < 1024*1024:
+        elif size < 1024 * 1024:
             u.human_size = f"{size/1024:.2f} KB"
         else:
             u.human_size = f"{size/(1024*1024):.2f} MB"
-    
+
     context = {
-        'uploads': uploads,
-        'total_used_mb': total_used_mb,
-        'quota_mb': quota_mb,
+        "uploads": uploads,
+        "total_used_mb": total_used_mb,
+        "quota_mb": quota_mb,
     }
     return render(request, "forum/existing_uploads.html", context)
 
@@ -265,3 +280,18 @@ def link_click(request, pk):
         link.save()
         return JsonResponse({"success": True, "clicks": link.clicks})
     return JsonResponse({"success": False})
+
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        thread_slug = post.thread.slug
+        thread = post.thread
+        post.delete()
+        if not thread.posts.exists():
+            thread.delete() # Delete thread too if no posts left
+            return redirect("core:frontpage")
+        messages.success(request, "Post deleted successfully.")
+        return redirect("forum:thread_detail", slug=thread_slug)
+    return render(request, "forum/confirm_delete_post.html", {"post": post})

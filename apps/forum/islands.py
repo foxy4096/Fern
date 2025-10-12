@@ -3,6 +3,9 @@ from apps.core.utils import paginate, is_hx_paginated, is_htmx
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
+from apps.notification.models import Notification
+from django.contrib.contenttypes.models import ContentType
+
 from .models import Post, Thread, Category, Upload
 
 
@@ -68,11 +71,21 @@ def like_post(request, pk):
         post.likes.remove(user)
     else:
         post.likes.add(user)
+        if post.author != request.user:
+            post_ct = ContentType.objects.get_for_model(Post)
+
+            Notification.objects.get_or_create(
+                sender=request.user,
+                receiver=post.author,
+                verb=f"{request.user.username} liked your post.",
+                content_type=post_ct,
+                object_id=post.pk,
+            )
     if is_htmx(request):
         return render(request, "forum/islands/like_button.html", {"post": post})
     else:
         return redirect(
-            "forum:post_detail", thread_slug=post.thread.slug, post_pk=post.pk
+            "forum:thread_detail", thread_slug=post.thread.slug
         )
 
 

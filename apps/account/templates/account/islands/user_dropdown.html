@@ -9,18 +9,17 @@
                 {{ mention_symbol }}{{ author }}
             </a>
         </p>
-        {% if with_name %}
         {{ author.get_full_name }}
-        {% endif %}
 
     </div>
     <div class="dropdown-menu" id="dropdown-menu4" role="menu" style="min-width: 25rem; padding-top: 10px;">
         <div class="dropdown-content">
             <div class="dropdown-item content">
-                {% if with_image %}
+                <img src="{{ author.userprofile.header.url }}" alt="user cover image"
+                    style="width: 100%; height: 8rem; object-fit: cover; border-radius: 8px; margin-bottom: 0.5rem;">
+
                 <img src="{{ author.userprofile.avatar.url }}" class="is-rounded" alt="user profile image"
-                    style="height: 5em; border-radius: 50%;">
-                {% endif %}
+                    style="height: 5em; border-radius: 50%; border: 3px solid rgb(20, 20, 20); position: relative; top: -2.5rem; background-color: rgb(20, 20, 20);">
                     <h4 class="title is-6">{{ author.get_full_name }}</h4>
                     <p class="subtitle is-6">@{{ author }}</p>
 

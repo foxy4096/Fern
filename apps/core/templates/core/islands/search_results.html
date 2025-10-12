@@ -18,5 +18,12 @@
 </div>
 {% endfor %}
 {% elif type_filter == "categories" %}
-Categories
+{% for category in results %}
+<div class="box">
+    {% include 'forum/islands/category_tree.html' with categories=results %}
+</div>
+{% endfor %}
+{% else %}
+<p>No categories found.</p>
+
 {% endif %}

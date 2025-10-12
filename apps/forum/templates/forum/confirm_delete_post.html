@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load user_mention %}
+{% load convert_markdown %}
+
+{% load bulma_tags %}
+{% load humanize %}
+
+{% block title %}
+Confirm Delete Post
+{% endblock title %}
+
+{% block content %}
+<h1 class="title is-2">Confirm Delete Post</h1>
+<p class="subtitle is-4">Are you sure you want to delete this post?</p>
+<div class="box">
+    <div class="content">
+        {{ post.body | convert_markdown | user_mention | safe}}
+    </div>
+    <hr>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="button is-danger">Yes, Delete</button>
+        <a href="{{ post.get_absolute_url }}" class="button is-light">Cancel</a>
+    </form>
+</div>
+{% endblock content %}

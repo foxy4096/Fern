@@ -9,7 +9,14 @@
 {% with post.author as author %}
 <div id="post-{{ post.id }}">
     <div class="tags are-medium">
-
+        <div class="tags are-medium">
+            <p class="tag is-dark" hx-boost="false" title="">
+                <span>
+                    <a href="{% url 'forum:post_detail' post.thread.slug post.id %}">Go to #{{ post.id }}</a>
+                </span>
+            </p>
+            </span>
+        </div>
         {% if post.parent and reply_button|default:True == True %}
         <p class="tag is-dark" hx-boost="false">
             <span class="icon">
@@ -53,5 +60,5 @@
     <div class="content">
         {{ post.body | convert_markdown | user_mention | safe }}
     </div>
-    
+
 </div>
