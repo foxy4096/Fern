@@ -33,10 +33,12 @@ Your Uploads - {{ user.get_username }}
 </div>
 
 <h4 class="title is-4">Your Uploads</h4>
-
+<div class="field">
+    <a href="{% url 'forum:upload_file' %}" class="button">Upload</a>
+</div>
 <div class="block">
     <p class="has-text-weight-bold">Upload Quota:</p>
-    <progress class="progress is-primary" value="{{ total_used_mb }}" max="{{ quota_mb }}">
+    <progress class="progress is-light is-large" value="{{ total_used_mb }}" max="{{ quota_mb }}">
         {{ total_used_mb }} MB / {{ quota_mb }} MB
     </progress>
     <p>{{ total_used_mb }} MB used of {{ quota_mb }} MB</p>
