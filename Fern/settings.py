@@ -201,4 +201,8 @@ SITE_CONFIG = {
     "ALLOW_DOC_LINKS": True,
     "NAVBAR_STYLE": "background-color: #272831;",
     "HTMX_BOOST": True,
+    "ALLOW_UPLOADS": True,
+    "UPLOAD_QUOTA_MB": 50,  # Total upload quota per user in MB
+    "MAX_UPLOAD_SIZE_MB": 5,  # Max individual upload size in MB
+    
 }

@@ -6,7 +6,7 @@ from django.urls import reverse
 from colorfield.fields import ColorField
 from django.core.exceptions import ValidationError
 import os
-
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -283,8 +283,8 @@ class Upload(models.Model):
     description = models.CharField(max_length=255, blank=True, null=True)
 
     def clean(self):
-        max_file_size = 5 * 1024 * 1024  # 5 MB
-        user_quota = 50 * 1024 * 1024  # 50 MB
+        max_file_size = settings.SITE_CONFIG["MAX_UPLOAD_SIZE_MB"] * 1024 * 1024  # 5 MB
+        user_quota = settings.SITE_CONFIG["UPLOAD_QUOTA_MB"] * 1024 * 1024  # 50 MB
 
         # ✅ Step 1: Ensure we actually have a file before accessing .size
         if not self.file or not hasattr(self.file, "size"):

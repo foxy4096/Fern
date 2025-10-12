@@ -18,6 +18,7 @@ from .islands import thread_post_list
 from apps.core.utils import paginate
 
 from apps.core.utils import is_htmx
+from django.conf import settings
 
 
 @login_required
@@ -219,7 +220,7 @@ def categories_list(request):
 
 @login_required
 def upload_file(request):
-    if request.method == "POST":
+    if request.method == "POST" and settings.ALLOW_UPLOADS:
         form = UploadForm(request.POST, request.FILES, initial={"user": request.user})
         if form.is_valid():
             upload = form.save(commit=False)
@@ -242,7 +243,7 @@ def existing_uploads(request):
     uploads = Upload.objects.filter(user=request.user).order_by("-uploaded_at")
     total_used_bytes = sum(upload.file.size for upload in uploads if upload.file)
     total_used_mb = round(total_used_bytes / (1024 * 1024), 2)
-    quota_mb = 50
+    quota_mb = settings.SITE_CONFIG["UPLOAD_QUOTA_MB"]
 
     # Prepare human-readable sizes for each upload
     for u in uploads:

@@ -1,3 +1,4 @@
+{% if ALLOW_UPLOADS %}
 <div class="control">
     <button class="button" hx-get="{% url 'forum:upload_modal' %}" hx-target="#modal-container" hx-trigger="click"
         hx-swap="innerHTML">
@@ -5,3 +6,4 @@
     </button>
     <div id="modal-container"></div>
 </div>
+{% endif %}
