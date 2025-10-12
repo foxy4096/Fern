@@ -10,8 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+
+
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-%&v%w%+0a0d_4y%#vg+84of04)(6j4h2+0!@57me0!3gmclefq"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -201,8 +207,16 @@ SITE_CONFIG = {
     "ALLOW_DOC_LINKS": True,
     "NAVBAR_STYLE": "background-color: #272831;",
     "HTMX_BOOST": True,
-    "ALLOW_UPLOADS": True,
-    "UPLOAD_QUOTA_MB": 50,  # Total upload quota per user in MB
-    "MAX_UPLOAD_SIZE_MB": 5,  # Max individual upload size in MB
-    
+    "ALLOW_UPLOADS": os.getenv('ALLOW_UPLOADS', 'True') == 'True',
+    "UPLOAD_QUOTA_MB": os.getenv('UPLOAD_QUOTA_MB', 50),  # Total upload quota per user in MB
+    "MAX_UPLOAD_SIZE_MB": os.getenv('MAX_UPLOAD_SIZE_MB', 5),  # Max individual upload size in MB
+    "ALLOWED_UPLOAD_TYPES": [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "video/mp4",
+        "application/pdf",
+        "text/plain",
+    ],
 }
+

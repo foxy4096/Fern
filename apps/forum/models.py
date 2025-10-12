@@ -285,14 +285,18 @@ class Upload(models.Model):
     def clean(self):
         max_file_size = settings.SITE_CONFIG["MAX_UPLOAD_SIZE_MB"] * 1024 * 1024  # 5 MB
         user_quota = settings.SITE_CONFIG["UPLOAD_QUOTA_MB"] * 1024 * 1024  # 50 MB
+        allowed_types = settings.SITE_CONFIG["ALLOWED_UPLOAD_TYPES"]
 
         # ✅ Step 1: Ensure we actually have a file before accessing .size
         if not self.file or not hasattr(self.file, "size"):
             return  # Skip checks if no file is present (e.g., editing description)
 
+        if self.file.file.content_type not in allowed_types:
+            raise ValidationError(_("File type not allowed."))
         # ✅ Step 2: Check individual file size
         if self.file.size > max_file_size:
             raise ValidationError(_("Each file must be ≤ 5 MB."))
+        
 
         # ✅ Step 3: Calculate total used space for the user (safe iteration)
         total_used = 0

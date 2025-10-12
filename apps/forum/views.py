@@ -220,7 +220,7 @@ def categories_list(request):
 
 @login_required
 def upload_file(request):
-    if request.method == "POST" and settings.ALLOW_UPLOADS:
+    if request.method == "POST" and settings.SITE_CONFIG["ALLOW_UPLOADS"]:
         form = UploadForm(request.POST, request.FILES, initial={"user": request.user})
         if form.is_valid():
             upload = form.save(commit=False)
