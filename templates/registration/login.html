@@ -12,9 +12,11 @@ Login
 <form method="post">
     {{ form | bulma }}
     {% csrf_token %}
-    <button type="submit" class="button is-success">Login</button>
-    <br>
-    <br>
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-success">Login</button>
+        </div>
+    </div>
     <small>Don't have an Account? <a href="{% url 'account:signup' %}">Sign Up</a></small>
 </form>
 {% endblock content %}

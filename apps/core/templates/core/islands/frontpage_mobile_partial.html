@@ -1,11 +1,13 @@
 {% load humanize %}
-<div class="box" style="background-color: transparent; border-left: 0.5rem rgb(61, 61, 61) solid; border-radius: 0%;">
+<div class="box" style="background-color: transparent; border-radius: 0%;">
     {% for category in categories %}
     <div class="media">
         <div class="media-content">
             <h5 class="title is-5">
                 <a href="{% url 'forum:threads_by_category' category.slug %}">
-                    {{ category.name }}
+                    <span class="tag is-dark" style="background-color: {{category.color}};">
+                        {{ category.name }}
+                    </span>
                 </a>
             </h5>
             {% for thread in category.get_recent_3_threads %}

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load bulma_tags %}
+{% load media_extras %}
+{% load humanize %}
+
+{% block title %}
+Your Uploads - {{ user.get_username }}
+{% endblock title %}
+
+{% block content %}
+{% include 'account/islands/user_summary_block.html' with tuser=user %}
+
+<div class="block mt-3" style="border-top: 1px solid rgb(58, 58, 58); 
+    border-bottom: 1px solid rgb(58, 58, 58); 
+    padding-top: 10px; 
+    padding-bottom: 10px;">
+    <span>
+        <span class="has-text-weight-bold">Joined:</span>
+        {{ user.date_joined }}
+    </span>
+</div>
+
+<div class="tabs is-centered is-fullwidth">
+    <ul>
+        <li><a href="{% url 'account:user_detail' user.username %}"><span class="icon"><i
+                        class="bi bi-person-fill"></i></span><span>Summary</span></a></li>
+        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i
+                        class="bi bi-broadcast-pin"></i></span><span>Activity</span></a></li>
+        <li class="is-active"><a><span class="icon"><i class="bi bi-archive-fill"></i></span><span>Your
+                    Uploads</span></a></li>
+        <li><a href="{% url 'account:user_preference' user.username %}"><span class="icon"><i class="bi bi-gear-wide-connected"></i></span><span>Preference</span></a></li>
+    </ul>
+</div>
+
+<h4 class="title is-4">Your Uploads</h4>
+
+{% if SITE_CONFIG.ALLOW_UPLOADS %}
+    
+
+<div class="field">
+    <a href="{% url 'forum:upload_file' %}" class="button">Upload</a>
+</div>
+{% else %}
+<p class="has-text-danger">File uploads are currently disabled.</p>
+{% endif %}
+<div class="block">
+    <p class="has-text-weight-bold">Upload Quota:</p>
+    <progress class="progress is-light is-large" value="{{ total_used_mb }}" max="{{ quota_mb }}">
+        {{ total_used_mb }} MB / {{ quota_mb }} MB
+    </progress>
+    <p>{{ total_used_mb }} MB used of {{ quota_mb }} MB</p>
+</div>
+
+<div class="columns is-multiline">
+    {% for upload in uploads %}
+    <div class="column is-one-quarter has-text-centered">
+        <div style="
+            border: 1px solid rgb(60, 60, 60);
+            border-radius: 12px;
+            padding: 10px;
+            background: rgba(255,255,255,0.02);
+            transition: all 0.2s ease;
+        " 
+        onmouseover="this.style.borderColor='rgb(120,120,120)';"
+        onmouseout="this.style.borderColor='rgb(60,60,60)';">
+
+            {% if upload.file.name|is_image %}
+            <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; border-radius: 10px;">
+                <img src="{{ upload.file.url }}" alt="{{ upload.file.name }}"
+                    style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+            </div>
+            {% else %}
+            <span class="icon is-large"><i class="fas fa-file fa-2x"></i></span>
+            <p>{{ upload.file.name }}</p>
+            {% endif %}
+
+            <p class="mt-1 has-text-grey is-size-7">
+                Size: {{ upload.file.size|filesizeformat }}
+            </p>
+
+            {% if upload.description %}
+            <p class="mt-1 has-text-grey"
+            style="font-size: 0.9em; white-space: normal; overflow-wrap: anywhere;">
+                {{ upload.description }}
+            </p>
+            {% else %}
+            <p class="mt-1 has-text-grey" style="font-size: 0.9em; color: #888;">No description</p>
+            {% endif %}
+
+            <form method="POST" action="{% url 'forum:delete_upload' upload.id %}" class="mt-2">
+                {% csrf_token %}
+                <a type="button" class="button is-small is-info copy-markdown-btn"
+                data-url="{{ upload.file.url }}" data-filename="{{ upload.file.name }}"
+                style="width: 100%;">
+                    Copy Markdown
+                </a>
+                <button type="submit" class="button is-small is-danger mt-2" style="width: 100%;"
+                    onclick="return confirm('Are you sure you want to delete this file?');">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+document.body.addEventListener('click', function (e) {
+    if (e.target.classList.contains('copy-markdown-btn')) {
+        const url = e.target.dataset.url;
+        const filename = e.target.dataset.filename.split('/').pop();
+        const markdown = /\.(png|jpg|jpeg|gif|webp)$/i.test(url)
+            ? `![${filename}](${url})`
+            : `[${filename}](${url})`;
+
+        navigator.clipboard.writeText(markdown)
+            .then(() => showToast("Copied Markdown to clipboard!", "is-success"))
+            .catch(() => showToast("Failed to copy!", "is-danger"));
+    }
+});
+</script>
+
+{% endblock content %}

@@ -1,13 +1,20 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Post
-from .utils import find_mentioned_users
+from .models import Post, Link
+from .utils import find_mentioned_users, find_links_in_text
 from apps.notification.models import Notification
 
 
 @receiver(post_save, sender=Post)
 def post_save_handler(sender, instance, created, **kwargs):
+    # Find all the links and create a magic link object
+    links = find_links_in_text(instance.body)
+    for url in links:
+        link, is_created = Link.objects.get_or_create(url=url, post=instance)
+        if is_created:
+            link.fetch_metadata()
     if created:
+        
         mentioned_users = find_mentioned_users(instance.body).exclude(
             username=instance.author.username
         )

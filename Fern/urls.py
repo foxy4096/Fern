@@ -11,7 +11,6 @@ urlpatterns = [
     path("polls/", include("apps.polls.urls")),
     path("forum/", include("apps.forum.urls")),
     path("accounts/", include("apps.account.urls")),
-    path("autocomplete/", include("apps.autocomplete.urls")),
     path("accounts/", include("apps.account.admin_urls")),
     path("notifications/", include("apps.notification.urls")),
     path("", include("user_sessions.urls", "user_sessions")),

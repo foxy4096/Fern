@@ -5,3 +5,8 @@ from apps.account.models import User
 def find_mentioned_users(text):
     mention_pattern = r"@(\w+)"
     return User.objects.filter(username__in=re.findall(mention_pattern, text))
+
+
+def find_links_in_text(text):
+    url_pattern = r'(https?://[^\s]+)'
+    return re.findall(url_pattern, text)

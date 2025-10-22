@@ -1,0 +1,25 @@
+<form 
+  hx-post="{% url 'forum:upload_file' %}" 
+  hx-target="#tab-content" 
+  hx-swap="innerHTML"
+  enctype="multipart/form-data">
+
+  {% csrf_token %}
+  <div class="field">
+    <label class="label">Choose File (max 5 MB)</label>
+    <div class="control">
+      <input type="file" name="file" class="input" required>
+    </div>
+  </div>
+
+  <div class="field">
+    <label class="label">Description</label>
+    <div class="control">
+      <input type="text" name="description" class="input">
+    </div>
+  </div>
+
+  <div class="field">
+    <button class="button is-success" type="submit">Upload</button>
+  </div>
+</form>

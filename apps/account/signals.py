@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, post_migrate
 from django.dispatch import receiver
-from .models import UserPreference, UserProfile, User, get_sentinel_user
+from .models import UserProfile, User, get_sentinel_user
 import logging
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,6 @@ def create_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         UserProfile.objects.create(user=instance)
-        UserPreference.objects.create(user=instance)
         logger.info(f"Created profile for {instance.username}")
 
 

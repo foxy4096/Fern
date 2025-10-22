@@ -1,0 +1,15 @@
+{# forum/category_list.html #}
+{% extends "base.html" %}
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+<h1 class="title is-4">All Categories</h1>
+<div class="box">
+
+    {% for category in categories %}
+    {% include "forum/islands/category_tree.html" with category=category depth=0 %}
+    {% empty %}
+    <p>No categories yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

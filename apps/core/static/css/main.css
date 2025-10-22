@@ -19,7 +19,7 @@
   border-radius: 0.1rem;
 }
 
-.tabbed-set > input {
+.tabbed-set>input {
   display: none;
 }
 
@@ -47,13 +47,13 @@
   opacity: 0;
 }
 
-.tabbed-set input:checked:nth-child(n + 1) + label {
+.tabbed-set input:checked:nth-child(n + 1)+label {
   color: rgb(0, 140, 255);
   border-color: rgb(0, 140, 255);
 }
 
 @media screen {
-  .tabbed-set input:nth-child(n + 1):checked + label + .tabbed-content {
+  .tabbed-set input:nth-child(n + 1):checked+label+.tabbed-content {
     order: 99;
     display: block;
   }
@@ -81,6 +81,7 @@
 .modal-background {
   background-color: rgba(44, 44, 44, 0.493) !important;
 }
+
 .editor-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -130,8 +131,10 @@ textarea:hover {
 
 #mdout,
 #editor {
-  width: 100%; /* Allow both elements to expand to their container's width */
-  box-sizing: border-box; /* Include padding and borders in the width calculation */
+  width: 100%;
+  /* Allow both elements to expand to their container's width */
+  box-sizing: border-box;
+  /* Include padding and borders in the width calculation */
 }
 
 .postbox {
@@ -142,9 +145,6 @@ textarea:hover {
   border-radius: 5px;
 }
 
-.profile-block {
-  width: 80%;
-}
 
 .profile-header-image {
   border-radius: 12px;
@@ -154,16 +154,15 @@ textarea:hover {
   border-radius: 12px;
 }
 
-@media (prefers-color-scheme: dark) {
-  .profile-info-block {
-    border-radius: 12px;
-    background: rgb(10, 10, 10);
-  }
-  .fern-nav {
-    background-color: rgb(36, 36, 36) !important;
-    border-radius: 12px;
-  }
+.profile-info-block {
+  border-radius: 12px;
+  background: rgb(0, 0, 0);
 }
+
+.fern-nav {
+  border-radius: 12px;
+}
+
 .table tr.is-selected {
   background-color: #ffdd57 !important;
   color: #363636 !important;
@@ -196,31 +195,100 @@ textarea:hover {
   border-radius: calc(0.5rem - 2px);
 }
 
-.button{
+/* .button{
   border-radius: 0% !important;
-}
+} */
 @media (prefers-color-scheme: light) {
+
   .button,
   .card,
   .box,
   .input,
   .textarea {
     box-shadow: none;
-    transition: all 0.3s ease; /* Added duration and easing */
+    transition: all 0.3s ease;
+    /* Added duration and easing */
   }
+
   .special-dark {
     background: #222222;
     color: #fff;
   }
+
   .special-dark:hover {
     background: #000000;
     color: #fff;
   }
 }
+
 hr {
   background-color: #4d4d4d !important;
 }
 
 .button:active {
   transform: scale(0.95);
+}
+
+#autocomplete-results:empty {
+  display: none;
+}
+
+
+.autocomplete-item {
+  padding: 0.5em;
+  cursor: pointer;
+}
+
+#autocomplete-results {
+  position: absolute;
+  z-index: 1000;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-height: 200px;
+  overflow-y: auto;
+  width: 100%;
+  /* match input width */
+}
+
+.autocomplete-item:hover {
+  background-color: #131316;
+}
+
+/* Some default input form styling for inputs with no class attributes */
+input,
+textarea{
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #4d4d4d;
+  padding: 1em;
+  border-radius: 0.25rem;
+  width: 100%;
+}
+/* For input type checkbox input having no class attribute */
+input[type="checkbox"]:not([class]) {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+label:not([class]) {
+  color: #fff;
+  font-size: 1em;
+  margin-bottom: 0.5em;
+  display: block;
+}
+.helptext {
+  font-size: 0.875em;
+  color: #888;
+  margin-top: 0.25em;
+}
+form>div:not([class]) {
+  margin-bottom: 1em;
+}
+
+select{
+  background-color: #1a1a1a;
+  color: #fff;
+  border: 1px solid #4d4d4d;
+  padding: 0.5em;
+  border-radius: 0.25rem;
 }

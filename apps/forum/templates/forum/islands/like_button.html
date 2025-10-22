@@ -1,9 +1,9 @@
 <div class="buttons" id="like-button-{{ post.id }}">
     <a 
-    href="{% url 'forum:reply_create' post.id %}" 
-    hx-get="{% url 'forum:reply_form' post.id %}"
-    hx-target="#reply-button-{{ post.id }}"
-    hx-swpa="outerHTML"
+    href="{% url 'forum:like_post' post.id %}" 
+    hx-get="{% url 'forum:like_post' post.id %}"
+    hx-target="#like-button-{{ post.id }}"
+    hx-swap="outerHTML"
     class="button is-ghost">
         <span class="icon">
             
@@ -16,6 +16,6 @@
             {% endif %}
                 
         </span>
-        <span>Like</span>
+    <span>{{ post.likes.count }} Likes</span>
     </a>
 </div>

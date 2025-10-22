@@ -1,0 +1,54 @@
+{% load media_extras %}
+<div class="block">
+  <p class="has-text-weight-bold">Upload Quota:</p>
+  <progress class="progress is-primary" value="{{ total_used_mb }}" max="{{ quota_mb }}">
+    {{ total_used_mb }} MB / {{ quota_mb }} MB
+  </progress>
+  <p>{{ total_used_mb }} MB used of {{ quota_mb }} MB</p>
+  <p><a href="{% url 'forum:existing_uploads' %}">Manage Files</a></p>
+</div>
+<div class="columns is-multiline">
+  {% for media in uploads %}
+  <div class="column has-text-centered is-one-quarter"
+       style="border: 1px solid rgb(58, 58, 58);
+              border-radius: 12px;
+              padding: 10px;
+              margin: 5px;
+              background-color: rgb(25, 25, 25);">
+
+    {% if media.file.name|is_image %}
+    <div style="width: 100%; aspect-ratio: 1/1; overflow: hidden; border-radius: 10px;">
+      <img src="{{ media.file.url }}" alt="{{ media.file.name }}"
+           style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+    </div>
+    {% else %}
+    <span class="icon"><i class="fas fa-file"></i></span>
+    <p>{{ media.file.name }}</p>
+    {% endif %}
+
+    <button class="button is-small mt-2 insert-upload-btn"
+      hx-get="{% url 'forum:insert_upload' media.id %}"
+      hx-trigger="click" hx-swap="none">
+      Insert
+    </button>
+  </div>
+  {% endfor %}
+</div>
+
+<script>
+  document.body.addEventListener('htmx:afterRequest', function (evt) {
+    const btn = evt.target;
+    if (btn.classList.contains('insert-upload-btn')) {
+      const ta = btn.closest('form')?.querySelector('textarea') || document.querySelector('textarea');
+      if (ta) {
+        const start = ta.selectionStart;
+        const end = ta.selectionEnd;
+        const text = ta.value;
+        ta.value = text.substring(0, start) + evt.detail.xhr.responseText + text.substring(end);
+        ta.selectionStart = ta.selectionEnd = start + evt.detail.xhr.responseText.length;
+        ta.focus();
+        console.log('Inserted upload markdown at cursor');
+      }
+    }
+  });
+</script>

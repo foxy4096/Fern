@@ -5,7 +5,7 @@ from django.db import models
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.safestring import mark_safe
 from django.shortcuts import resolve_url
-from .models import User, UserPreference, UserProfile
+from .models import User, UserProfile
 
 
 avatar_display_html = lambda url: mark_safe(
@@ -45,23 +45,9 @@ class UserProfileInline(admin.StackedInline):
         return avatar_display_html(obj.avatar_image())
 
 
-class UserPreferenceInline(admin.StackedInline):
-    model = UserPreference
-    can_delete = False
-    extra = 0
-
-    fieldsets = (
-        (
-            "Email Notifications",
-            {
-                "fields": ("email_notifications", "email_notifications_frequency"),
-            },
-        ),
-    )
-
 
 class UserAdmin(BaseUserAdmin):
-    inlines = (UserProfileInline, UserPreferenceInline)
+    inlines = (UserProfileInline,)
     list_display = (
         "profile_picture",
         "username",

@@ -2,7 +2,7 @@
 {% load user_mention %}
 
 
-<div class="bg-transparent mx-auto w-4/5 shadow-none profile-block">
+<div class="mx-auto">
     {% if tuser.userprofile.header %}
     <figure class="image is-16by4 profile-header">
         <img src="{{ tuser.userprofile.header.url }}" class="profile-header-image" alt="Placeholder image">
@@ -33,7 +33,7 @@
         </span>
         <br>
         {% endif %}
-        <div class="content my-3">
+        <div class="content my-3" style="overflow: auto;">
             {% autoescape off %}
             {{ tuser.userprofile.bio | convert_markdown | user_mention }}
             {% endautoescape %}

@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
-{% load bulma_tags %}
+
 {% load convert_markdown %}
 {% load user_mention %}
+{% load bulma_tags %}
+
 
 
 {% block title %}
@@ -24,13 +26,18 @@ Preference - {{ tuser.get_username }}
 </div>
 <div class="tabs is-centered is-fullwidth">
     <ul>
-        <li><a href="{% url 'account:user_detail' tuser.username %}">Summary</a></li>
-        <li><a href="{% url 'user_sessions:session_list' %}">Activity</a></li>
-        <li><a>Invites</a></li>
+        <li><a href="{% url 'account:user_detail' tuser.username %}"><span class="icon"><i
+                        class="bi bi-person-fill"></i></span><span>Summary</span></a></li>
+        <li><a href="{% url 'user_sessions:session_list' %}"><span class="icon"><i
+                        class="bi bi-broadcast-pin"></i></span><span>Activity</span></a></li>
+        <li><a href="{% url 'forum:existing_uploads' %}"><span class="icon"><i
+                        class="bi bi-archive-fill"></i></span><span>Your Uploads</span></a></li>
+
         {% if tuser == user %}
-        <li><a>Notification</a></li>
-        <li><a>Message</a></li>
-        <li class="is-active"><a>Preference</a></li>
+
+
+        <li class="is-active"><a><span class="icon"><i
+                        class="bi bi-gear-wide-connected"></i></span><span>Preferences</span></a></li>
         {% endif %}
     </ul>
 </div>
@@ -39,20 +46,23 @@ Preference - {{ tuser.get_username }}
     {{ tuser.get_username }}
 </p>
 <p>
-    People can mention you as @{{ tuser.get_username }}
+    People can mention you as <strong>@{{ tuser.get_username }}</strong>
 </p>
 <br>
 <form action="." method="post" enctype="multipart/form-data">
+
     {% csrf_token %}
     <h4 class="title is-4">General Info</h4>
-    {{ uform | bulma }}
-    {{ pform | bulma }}
+    <div class="column is-half">
+        {{ uform | bulma }}
+        {{ pform | bulma }}
+    </div>
     <h4 class="title is-4">Profile Picture</h4>
     <figure class="image is-64x64 block">
         <img src="{{ tuser.userprofile.avatar_image }}" alt="User Profile Picture" loading="lazy" class="is-rounded">
     </figure>
     <div class="field" hx-boost="false">
-        {{ aform.as_div  }}
+        {{ aform | bulma}}
         <p class="help">If the uploaded image is not shown, make sure to deselect the Use Gravatar</p>
     </div>
     <div class="field">

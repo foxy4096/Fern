@@ -10,8 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+
+
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +30,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-%&v%w%+0a0d_4y%#vg+84of04)(6j4h2+0!@57me0!3gmclefq"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ["*"]
 
@@ -52,6 +58,7 @@ LOGGING = {
 }
 
 ADMIN_SITE_TITLE = os.environ.get("ADMIN_SITE_TITLE", "Fern Administration 🌱")
+SITE_TITLE = os.environ.get("SITE_TITLE", "Fern 🌱")
 
 LOGIN_REDIRECT_URL = "core:frontpage"
 LOGOUT_REDIRECT_URL = "core:frontpage"
@@ -60,8 +67,6 @@ LOGOUT_REDIRECT_URL = "core:frontpage"
 
 INSTALLED_APPS = [
     "maintenance_mode",
-    "daphne",
-    "channels",
     "django.contrib.admin",
     "django.contrib.admindocs",
     "django.contrib.auth",
@@ -78,12 +83,10 @@ INSTALLED_APPS = [
     "apps.notification.apps.NotificationConfig",
     "apps.polls.apps.PollsConfig",
     "django_cleanup.apps.CleanupConfig",
-    "apps.autocomplete.apps.AutocompleteConfig",
-    "bulma",
     "colorfield",
     "user_sessions",
     "debug_toolbar",
-    "template_partials",
+    "apps.bulma.apps.BulmaConfig",
 ]
 
 SITE_ID = 1
@@ -126,6 +129,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "apps.core.context_processors.is_htmx",
                 "apps.core.context_processors.core_config",
+                "apps.core.context_processors.site_title",
                 "apps.notification.context_processors.get_notification_info",
             ],
         },
@@ -134,16 +138,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "Fern.wsgi.application"
 ASGI_APPLICATION = "Fern.asgi.application"
-
-
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
-        },
-    },
-}
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -204,14 +198,25 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# NAVBAR CONFIG
 
-NAVBAR_CONFIG = {
+SITE_CONFIG = {
     "LOGO_PATH": f"{STATIC_URL}images/seedling_logo.png",
     "LINKS": [
         {"name": "Home", "url": "/"},
-        {"name": "Polls", "url": "/polls/"},
-        {"name": "Admin", "url": "/admin/", "boost": False},
     ],
     "ALLOW_DOC_LINKS": True,
+    "NAVBAR_STYLE": "background-color: #272831;",
+    "HTMX_BOOST": True,
+    "ALLOW_UPLOADS": os.getenv('ALLOW_UPLOADS', 'True') == 'True',
+    "UPLOAD_QUOTA_MB": os.getenv('UPLOAD_QUOTA_MB', 50),  # Total upload quota per user in MB
+    "MAX_UPLOAD_SIZE_MB": os.getenv('MAX_UPLOAD_SIZE_MB', 5),  # Max individual upload size in MB
+    "ALLOWED_UPLOAD_TYPES": [
+        "image/jpeg",
+        "image/png",
+        "image/gif",
+        "video/mp4",
+        "application/pdf",
+        "text/plain",
+    ],
 }
+

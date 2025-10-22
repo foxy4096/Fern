@@ -1,7 +1,7 @@
 {% load convert_markdown %}
 {% load user_mention %}
 {% load humanize %}
-{% load bulma_tags %}
+
 
 
 {% if not post.parent %}
@@ -39,7 +39,7 @@
             </figure>
         </div>
         <div class="media-content">
-            {% include 'account/islands/user_dropdown.html' with with_name=True with_image=False %}
+            {% include 'account/islands/user_dropdown.html' %}
             <br>
         </div>
         <div class="media-right tags">
@@ -49,7 +49,7 @@
             {% if post.author == user %}
             <a class="tag is-link" href="{% url 'forum:post_edit' post.id %}" hx-swap="innerHTML"
                 hx-get="{% url 'forum:post_edit' post.id %}" hx-target="#post-{{ post.id }}">Edit</a>
-            <div class="tag is-danger">Delete</div>
+            <a href="{% url 'forum:delete_post' post.id %}" class="tag is-danger">Delete</a>
             {% endif %}
         </div>
     </div>
@@ -58,6 +58,29 @@
     <div class="content">
         {{ post.body | convert_markdown | user_mention | safe }}
     </div>
+    {% if post.links.exists %}
+    <div class="box mt-3">
+    <p class="has-text-weight-bold">Links:</p>
+    <br>
+    <ul>
+        {% for link in post.links.all %}
+        <li style="margin-bottom: 0.5rem;" data-link-id="{{ link.id }}">
+            {% if link.og_image %}
+            <img src="{{ link.og_image }}" alt="{{ link.title }}" style="width: 64px; height: 64px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 0.5rem;">
+            {% endif %}
+            <a href="{{ link.url }}" target="_blank" class="rich-link" data-link-id="{{ link.id }}">
+                {{ link.title }} 
+            </a>
+            <span class="click-count tag" data-link-id="{{ link.id }}">{{ link.clicks }}</span>
+            {% if link.description %}
+            - <span class="has-text-grey">{{ link.description }}</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+    {% endif %}
+
     {% if reply_button|default:True == True and not post.thread.is_locked %}
     <div class="level">
         <div class="level-left">

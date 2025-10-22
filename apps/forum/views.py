@@ -1,22 +1,28 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect, render, resolve_url
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.csrf import csrf_exempt
+from apps.notification.models import Notification
+
 
 from apps.forum.forms import (
     PostCreationForm,
     ReplyCreationForm,
     ThreadCreationForm,
     CategoryFilterForm,
+    UploadForm,
 )
-from apps.forum.models import Post, Thread, Category
+from apps.forum.models import Post, Thread, Category, Upload, Link
 from .islands import thread_post_list
 from apps.core.utils import paginate
 
 from apps.core.utils import is_htmx
+from django.conf import settings
 
 
 @login_required
-def thread_create(request):
+def thread_create(request, category_slug=None):
     """
     Create a new thread and handle form submissions.
 
@@ -26,7 +32,16 @@ def thread_create(request):
     Returns:
         HttpResponse: The rendered HTML response.
     """
-    tform = ThreadCreationForm(request.POST if request.method == "POST" else None)
+
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug)
+    else:
+        category = None
+
+    tform = ThreadCreationForm(
+        request.POST if request.method == "POST" else None,
+        initial={"category": category},
+    )
     pform = PostCreationForm(request.POST if request.method == "POST" else None)
 
     if request.method == "POST" and tform.is_valid() and pform.is_valid():
@@ -162,7 +177,11 @@ def threads_by_category(request, slug=""):
     return render(
         request,
         "forum/threads_by_category.html",
-        {"threads": threads, "category": category, "category_filter_form": category_filter_form},
+        {
+            "threads": threads,
+            "category": category,
+            "category_filter_form": category_filter_form,
+        },
     )
 
 
@@ -173,4 +192,107 @@ def like_post(request, pk):
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
+        if post.author != request.user:
+            Notification.objects.get_or_create(
+                sender=request.user,
+                receiver=post.author,
+                verb=f"{request.user.username} liked your post.",
+                content_object=post,
+            )
     return redirect("forum:thread_detail", slug=post.thread.slug)
+
+
+def categories_list(request):
+    """
+    Display a list of all categories.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered HTML response.
+    """
+    categories = Category.objects.filter(parent__isnull=True).prefetch_related(
+        "subcategories"
+    )
+    return render(request, "forum/categories_list.html", {"categories": categories})
+
+
+@login_required
+def upload_file(request):
+    if request.method == "POST" and settings.SITE_CONFIG["ALLOW_UPLOADS"]:
+        form = UploadForm(request.POST, request.FILES, initial={"user": request.user})
+        if form.is_valid():
+            upload = form.save(commit=False)
+            upload.user = request.user
+            upload.full_clean()
+            upload.save()
+            messages.success(request, "File uploaded successfully.")
+            if is_htmx(request):
+                return redirect("forum:existing_uploads_island")
+            return redirect("forum:existing_uploads")
+        else:
+            messages.error(request, "There was an error uploading your file.")
+    else:
+        form = UploadForm()
+    return render(request, "forum/upload_file.html", {"form": form})
+
+
+@login_required
+def existing_uploads(request):
+    uploads = Upload.objects.filter(user=request.user).order_by("-uploaded_at")
+    total_used_bytes = sum(upload.file.size for upload in uploads if upload.file)
+    total_used_mb = round(total_used_bytes / (1024 * 1024), 2)
+    quota_mb = settings.SITE_CONFIG["UPLOAD_QUOTA_MB"]
+
+    # Prepare human-readable sizes for each upload
+    for u in uploads:
+        size = u.file.size
+        if size < 1024:
+            u.human_size = f"{size} B"
+        elif size < 1024 * 1024:
+            u.human_size = f"{size/1024:.2f} KB"
+        else:
+            u.human_size = f"{size/(1024*1024):.2f} MB"
+
+    context = {
+        "uploads": uploads,
+        "total_used_mb": total_used_mb,
+        "quota_mb": quota_mb,
+    }
+    return render(request, "forum/existing_uploads.html", context)
+
+
+@login_required
+def delete_upload(request, pk):
+    upload = get_object_or_404(Upload, pk=pk, user=request.user)
+    if request.method == "POST":
+        upload.delete()
+        messages.success(request, "Upload deleted successfully.")
+        return redirect("forum:existing_uploads")
+    return render(request, "forum/confirm_delete_upload.html", {"upload": upload})
+
+
+@csrf_exempt
+def link_click(request, pk):
+    if request.method == "POST":
+        link = Link.objects.get(pk=pk)
+        link.clicks += 1
+        link.save()
+        return JsonResponse({"success": True, "clicks": link.clicks})
+    return JsonResponse({"success": False})
+
+
+@login_required
+def delete_post(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == "POST":
+        thread_slug = post.thread.slug
+        thread = post.thread
+        post.delete()
+        if not thread.posts.exists():
+            thread.delete() # Delete thread too if no posts left
+            return redirect("core:frontpage")
+        messages.success(request, "Post deleted successfully.")
+        return redirect("forum:thread_detail", slug=thread_slug)
+    return render(request, "forum/confirm_delete_post.html", {"post": post})

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load convert_markdown %}
+
+{% block title %}
+Search
+{% endblock title %}
+
+{% block content %}
+<div class="box">
+    <h1 class="title">
+
+        {% if query %}
+        {{ results|length }} results for "<strong>{{ query }}</strong>"
+        {% else %}
+        Seach
+        {% endif %}
+        <p class="subtitle">Search across the site</p>
+        <form action=".">
+            <div class="columns is-multiline">
+                <div class="column is-10">
+                    <input type="text" name="q" class="input" placeholder="Search..." value="{{ query }}">
+                </div>
+                <div class="column is-2">
+                    <div class="field">
+                        <div class="control">
+                            <div class="select">
+                                <select name="type" class="input" name="type">
+                                    <option value="threads" {% if type_filter == "threads" %}selected{% endif %}>Threads
+                                    </option>
+                                    <option value="posts" {% if type_filter == "posts" %}selected{% endif %}>Posts
+                                    </option>
+                                    <option value="users" {% if type_filter == "users" %}selected{% endif %}>Users
+                                    </option>
+                                    <option value="categories" {% if type_filter == "categories" %}selected{% endif %}>
+                                        Categories</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="control">
+                    <button type="submit" class="button is-medium">Search</button>
+                </div>
+            </div>
+        </form>
+
+    </h1>
+</div>
+
+<br>
+<br>
+{% include 'core/islands/search_results.html' %}
+
+{% endblock content %}

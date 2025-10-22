@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% load bulma_tags %}
+{% load humanize %}
+
+{% block title %}Upload File{% endblock title %}
+{% block content %}
+<h4 class="title is-2">Upload File</h4>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+   {{ form | bulma }}
+    <div class="field">
+        <div class="control">
+            <button type="submit" class="button is-primary">Upload</button>
+            <a href="{% url 'forum:existing_uploads' %}" class="button is-light">Cancel</a>
+        </div>
+    </div>
+</form>
+{% endblock content %}

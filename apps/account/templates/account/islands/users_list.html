@@ -1,0 +1,40 @@
+<!-- Users list partial -->
+
+{% load humanize %}
+{% load convert_markdown %}
+<div class="media">
+    <div class="media-left">
+        <a href="{% url 'account:user_detail' user.username %}">
+            <figure class="image is-48x48">
+                <img src="{{ user.userprofile.avatar_image }}" alt="User Avatar" class="is-rounded">
+            </figure>
+        </a>
+    </div>
+    <div class="media-content">
+        <h4 class="title is-4
+                    has-text-weight-bold">
+            <a href="{% url 'account:user_detail' user.username %}">
+                {{ user.username }}
+            </a>
+        </h4>
+        <p class="subtitle is-6">
+            <span class="has-text-grey-light">Joined:</span>
+            <time datetime="{{ user.date_joined|date:'c' }}">{{ user.date_joined|naturaltime }}</time>
+        </p>
+        <p class="subtitle is-6">
+            <span class="has-text-grey-light">Posts:</span>
+            {{ user.posts.count }}
+        </p>
+        <p class="subtitle is-6">
+            <span class="has-text-grey-light">Threads:</span>
+            {{ user.threads.count }}
+        </p>
+    </div>
+    <div class="media-right">
+        <div class="buttons">
+            <a href="{% url 'account:user_detail' user.username %}" class="button is-small">
+                View Profile
+            </a>
+        </div>
+    </div>
+</div>

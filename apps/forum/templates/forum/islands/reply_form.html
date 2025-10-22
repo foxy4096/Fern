@@ -1,22 +1,17 @@
-{% load bulma_tags %}
-<form
-  action="{% url 'forum:reply_create' post.pk %}"
-  method="post"
-  id="reply-form-{{ post.pk }}"
->
-  {% csrf_token %} {{ reply_form | bulma }}
+<form action="{% url 'forum:reply_create' post.pk %}" method="post" id="reply-form-{{ post.pk }}">
+  {% csrf_token %} {{ reply_form }}
   <div class="control">
-    <button type="submit" class="button">Reply</button>
-    {% if cancel_button|default:True == True %}    
-    <button
-    type="submit"
-    hx-get="{% url 'forum:reply_button' post.pk %}"
-    hx-target="#reply-form-{{ post.pk }}"
-    hx-swap="outerHTML"
-    class="button is-outlined is-danger"
-    >
-    Cancel
-</button>
-{% endif %}
+    <div class="buttons">
+
+      <button type="submit" class="button">Reply</button>
+      {% if cancel_button|default:True == True %}
+      <button type="submit" hx-get="{% url 'forum:reply_button' post.pk %}" hx-target="#reply-form-{{ post.pk }}"
+      hx-swap="outerHTML" class="button is-outlined is-danger">
+      Cancel
+    </button>
+    {% include 'forum/islands/upload_button.html' %}
+  </div>
+    
+    {% endif %}
   </div>
 </form>
